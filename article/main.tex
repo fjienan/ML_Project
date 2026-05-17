@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+
+% ===== Packages =====
+\usepackage{
+  amsmath,
+  amssymb,
+  amsthm,
+  graphicx,
+  hyperref,
+  geometry,
+  sectsty,
+  fancyhdr,
+  booktabs,
+  caption,
+  subcaption,
+  tikz,
+  pgfplots,
+}\pgfplotsset{compat=1.18}
+\usetikzlibrary{decorations.pathmorphing,decorations.pathreplacing,plotmarks}
+\usepackage{ctex}
+\usepackage{fontspec}
+\setCJKmainfont{Noto Serif CJK SC}
+\newfontfamily{\englishfont}{Latin Modern Roman}
+\usepackage{indentfirst}
+\usepackage{parskip}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{natbib}
+
+\geometry{
+  left=2.5cm,
+  right=2.5cm,
+  top=2.5cm,
+  bottom=2.5cm
+}
+
+% ===== Page Style =====
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small{南方科技大学 -- 大数据科学导论：课程项目 II}}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+
+% ===== Code Listing Style =====
+\lstset{
+  language=Python,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  breaklines=true,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!40!black},
+  stringstyle=\color{orange},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  showstringspaces=false,
+}
+
+% ===== Title =====
+\title{\textbf{乳腺癌蛋白质组数据挖掘}\\
+  \large 课程项目报告}
+\author{冯杰楠 (12412112) \and 彭羽晗 (12412155)}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\hrule
+\vspace{1em}
+
+% ===== Sections =====
+\input{./sections/1_introduction.tex}
+\input{sections/2_data_exploration}
+\input{sections/3_preprocessing}
+\input{sections/4_clustering}
+\input{sections/5_classification}
+\input{sections/6_own_problem}
+\input{sections/7_conclusion}
+\input{sections/references}
+
+% ===== Appendix =====
+\appendix
+\input{sections/appendix}
+
+\end{document}
