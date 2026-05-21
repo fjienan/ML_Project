@@ -1,0 +1,71 @@
+import pandas as pd
+import re
+import numpy as np
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split  # 必须加这个
+
+# ===================== 路径 =====================
+dataset_path = "77_cancer_proteomes_CPTAC_itraq.csv"
+clinical_info = "clinical_data_breast_cancer.csv"
+pam50_proteins = "PAM50_proteins.csv"
+
+# ===================== 读取数据 =====================
+data = pd.read_csv(dataset_path, header=0, index_col=0)
+clinical = pd.read_csv(clinical_info, header=0, index_col=0)
+pam50 = pd.read_csv(pam50_proteins, header=0)
+
+# ===================== 删除无用列 =====================
+data.drop(['gene_symbol', 'gene_name'], axis=1, inplace=True)
+
+# ===================== 统一样本ID格式 =====================
+data.rename(
+    columns=lambda x: "TCGA-%s" % re.split(r'[_|.]', x)[0] if "TCGA" in x else x,
+    inplace=True
+)
+
+# ===================== 自动删除重复样本列 =====================
+data = data.loc[:, ~data.columns.duplicated()]
+
+# ===================== 转置：行=患者 =====================
+data = data.transpose()
+
+# ===================== 剔除健康样本 =====================
+data = data[data.index.str.contains("TCGA")]
+
+# ===================== 合并蛋白质 + 临床信息（含PAM50标签） =====================
+final_data = data.merge(clinical, left_index=True, right_index=True)
+
+# ===================== 筛选 PAM50 蛋白质 =====================
+pam50_ids = pam50['RefSeqProteinID'].tolist()
+feature_cols = [x for x in final_data.columns if x in pam50_ids]
+X = final_data[feature_cols]
+y = final_data['PAM50 mRNA']  # 分层标签
+
+# ===================== 缺失值填充 =====================
+imputer = SimpleImputer(strategy='median')
+X_imputed = imputer.fit_transform(X)
+
+# ===================== 重新组装 DataFrame =====================
+final_df = pd.DataFrame(X_imputed, index=X.index, columns=X.columns)
+final_df['PAM50 mRNA'] = y.values  # 把标签加回去
+
+# ===================== ✅ 分层抽样拆分：43 训练 / 34 测试 =====================
+train_set, test_set = train_test_split(
+    final_df,
+    test_size=34/77,
+    random_state=42,
+    stratify=final_df['PAM50 mRNA']
+)
+
+# ===================== 输出结果 =====================
+print("\n✅ 数据拆分完成！")
+print(f"总样本：{len(final_df)}")
+print(f"训练集：{len(train_set)} 个")
+print(f"测试集：{len(test_set)} 个")
+
+# ===================== 保存文件 =====================
+train_set.to_csv("train_set.csv", encoding="utf-8-sig")
+test_set.to_csv("test_set.csv", encoding="utf-8-sig")
+print("\n文件已保存：")
+print("→ train_set.csv")
+print("→ test_set.csv")
