@@ -1,0 +1,123 @@
+# ===================== 乳腺癌数据 分开可视化（每张图独立） =====================
+import pandas as pd
+import re
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
+
+# 解决中文显示
+plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
+
+# ===================== 读取数据 =====================
+dataset_path = "77_cancer_proteomes_CPTAC_itraq.csv"
+clinical_info = "clinical_data_breast_cancer.csv"
+pam50_proteins = "PAM50_proteins.csv"
+
+data_raw = pd.read_csv(dataset_path, header=0, index_col=0)
+clinical = pd.read_csv(clinical_info, header=0, index_col=0)
+pam50 = pd.read_csv(pam50_proteins, header=0)
+
+# ==============================================================================
+# ======================== 【一】数据处理前 —— 每张图独立 ========================
+# ==============================================================================
+
+# 1. 原始数据缺失值分布（患者缺失某蛋白质显示红色，不缺失就不显色）
+plt.figure(figsize=(10, 6))
+sns.heatmap(data_raw.isnull(), cbar=False, cmap="Reds", yticklabels=False)
+plt.title("原始数据缺失值分布", fontsize=14)
+plt.tight_layout()
+plt.savefig("1_原始缺失值.png", dpi=300)
+plt.show()
+
+# 2. 原始蛋白质表达值分布
+expr_raw = data_raw.drop(columns=["gene_symbol", "gene_name"], errors="ignore")
+expr_flat = expr_raw.values.flatten()
+expr_flat = expr_flat[~np.isnan(expr_flat)]
+
+plt.figure(figsize=(10, 6))
+plt.hist(expr_flat, bins=50, color="skyblue", alpha=0.7)
+plt.title("原始蛋白质表达值分布", fontsize=14)
+plt.xlabel("表达值")
+plt.ylabel("频数")
+plt.tight_layout()
+plt.savefig("2_原始表达值分布.png", dpi=300)
+plt.show()
+
+# 3. 原始临床 PAM50 亚型分布
+plt.figure(figsize=(10, 6))
+clinical["PAM50 mRNA"].value_counts().plot(kind="bar", color="orange", alpha=0.7)
+plt.title("原始数据 PAM50 亚型分布", fontsize=14)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig("3_原始PAM50分布.png", dpi=300)
+plt.show()
+#PAM50 是乳腺癌分子分型（LumA、LumB、Basal、HER2 等）
+#这张图展示各类别样本数量是否均衡
+#能看出数据集中哪一类患者最多，为后续分类模型提供依据
+
+# ==============================================================================
+# ======================== 【二】执行你的数据处理流程 ========================
+# ==============================================================================
+data = data_raw.copy()
+data.drop(['gene_symbol', 'gene_name'], axis=1, inplace=True)
+
+data.rename(
+    columns=lambda x: "TCGA-%s" % re.split(r'[_|.]', x)[0] if "TCGA" in x else x,
+    inplace=True
+)
+data = data.loc[:, ~data.columns.duplicated()]
+data = data.transpose()
+data = data[data.index.str.contains("TCGA")]
+final_data = data.merge(clinical, left_index=True, right_index=True)
+
+pam50_ids = pam50['RefSeqProteinID'].tolist()
+feature_cols = [x for x in final_data.columns if x in pam50_ids]
+X = final_data[feature_cols]
+y = final_data['PAM50 mRNA']
+
+imputer = SimpleImputer(strategy='median')
+X_imputed = imputer.fit_transform(X)
+final_df = pd.DataFrame(X_imputed, index=X.index, columns=X.columns)
+final_df['PAM50 mRNA'] = y.values
+
+train_set, test_set = train_test_split(
+    final_df, test_size=34/77, random_state=42, stratify=final_df['PAM50 mRNA']
+)
+
+# ==============================================================================
+# ======================== 【三】数据处理后 —— 每张图独立 ========================
+# ==============================================================================
+
+# 2. 处理后表达值分布
+plt.figure(figsize=(10, 6))
+plt.hist(final_df[feature_cols].values.flatten(), bins=50, color="lightgreen", alpha=0.7)
+plt.title("处理后表达值分布", fontsize=14)
+plt.tight_layout()
+plt.savefig("4_处理后表达值分布.png", dpi=300)
+plt.show()
+
+# 3. 训练集 / 测试集 PAM50 分层分布对比
+plt.figure(figsize=(10, 6))
+train_pam = train_set['PAM50 mRNA'].value_counts().sort_index()
+test_pam = test_set['PAM50 mRNA'].value_counts().sort_index()
+x = np.arange(len(train_pam))
+width = 0.35
+
+plt.bar(x - width/2, train_pam, width, label='训练集', color='dodgerblue')
+plt.bar(x + width/2, test_pam, width, label='测试集', color='coral')
+plt.title('训练集 vs 测试集 PAM50 亚型分布', fontsize=14)
+plt.xticks(x, train_pam.index, rotation=45)
+plt.legend()
+plt.tight_layout()
+plt.savefig("5_训练测试集PAM50对比.png", dpi=300)
+plt.show()
+
+# ===================== 保存文件 =====================
+train_set.to_csv("train_set.csv", encoding="utf-8-sig")
+test_set.to_csv("test_set.csv", encoding="utf-8-sig")
+
+print("\n✅ 所有图片已单独保存！")
+print("✅ 训练集/测试集已生成！")

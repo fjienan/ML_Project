@@ -44,7 +44,9 @@ y = final_data['PAM50 mRNA']  # 分层标签
 # ===================== 缺失值填充 =====================
 imputer = SimpleImputer(strategy='median')
 X_imputed = imputer.fit_transform(X)
-
+#由于蛋白质表达数据存在偏态分布与异常值，均值易受极端值干扰，
+#而中位数具有稳健性，能更合理地代表蛋白质表达的中心趋势。
+#因此本研究采用中位数填充处理缺失值，保证数据分布不被扭曲，适用于后续聚类与分类建模。
 # ===================== 重新组装 DataFrame =====================
 final_df = pd.DataFrame(X_imputed, index=X.index, columns=X.columns)
 final_df['PAM50 mRNA'] = y.values  # 把标签加回去
