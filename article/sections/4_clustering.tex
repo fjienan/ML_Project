@@ -2,4 +2,170 @@
 
 \label{sec:clustering}
 
-% TODO: k-means clustering, compare with PAM50 mRNA results
+本节对应项目任务二：以蛋白质表达数值为输入进行无监督聚类，并将聚类结果与临床数据中的 PAM50 mRNA 分型进行对比。需要强调的是，PAM50 mRNA 标签在本节中仅用于外部评价，不参与模型训练，因此本节仍属于无监督学习任务。
+
+\subsection{实验设置}
+
+本节沿用前文预处理后得到的蛋白质表达矩阵作为聚类输入，共包含 77 个乳腺癌样本和 43 个可匹配的 PAM50 蛋白表达特征。聚类过程中不使用 PAM50 mRNA 标签；该标签仅在模型训练完成后用于评价聚类结果与临床分型之间的一致性。
+
+为了满足课程项目中对 K-means 的要求，并为深度聚类方法提供参照，本节首先使用 K-means 作为基线方法。随后采用 Deep Embedded Clustering (DEC) 作为主要尝试。DEC 的基本思想是先通过自编码器学习低维表示，再在该表示空间中优化聚类目标。本文使用的自编码器结构为
+\[
+43 \rightarrow 32 \rightarrow 10 \rightarrow 32 \rightarrow 43,
+\]
+其中 10 维瓶颈层作为样本的潜在表达表示。自编码器预训练阶段最小化重构误差：
+\[
+\mathcal{L}_{rec} = \frac{1}{n}\sum_{i=1}^{n}\lVert x_i-\hat{x}_i\rVert_2^2.
+\]
+完成预训练后，在潜在空间中用 K-means 初始化聚类中心，并使用 Student-t 分布计算样本 \(i\) 属于簇 \(j\) 的软分配：
+\[
+q_{ij} =
+\frac{(1+\lVert z_i-\mu_j\rVert^2)^{-1}}
+{\sum_{j'}(1+\lVert z_i-\mu_{j'}\rVert^2)^{-1}}.
+\]
+DEC 进一步构造目标分布 \(p_{ij}\) 来强化高置信度分配：
+\[
+p_{ij} =
+\frac{q_{ij}^2 / \sum_i q_{ij}}
+{\sum_{j'} q_{ij'}^2 / \sum_i q_{ij'}}.
+\]
+模型通过最小化 \(p\) 与 \(q\) 之间的 KL 散度来更新编码器和聚类中心：
+\[
+\mathcal{L}_{DEC}=KL(P\Vert Q)=\sum_i\sum_j p_{ij}\log\frac{p_{ij}}{q_{ij}}.
+\]
+
+\subsection{K-means 基线结果}
+
+图 \ref{fig:kmeans_selection} 展示了不同聚类数 \(k\) 下 K-means 的内部指标和外部指标。Silhouette 在 \(k=2\) 时最高，但该设置只能把样本粗略分成两组，不能充分对应乳腺癌的分子异质性。结合项目说明中原始研究得到 3 个蛋白质组亚型的结论，以及 ARI、NMI、Homogeneity 在 \(k=3\) 附近的表现，本文将 \(k=3\) 作为任务二的主要聚类数，同时保留 \(k=4\) 作为与 PAM50 四分类结构的补充对照。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/kmeans_silhouette_curve.png}
+        \caption{K-means 的 Silhouette 曲线}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/kmeans_external_metrics.png}
+        \caption{K-means 与 PAM50 的外部指标}
+    \end{subfigure}
+    \caption{K-means 在不同聚类数下的指标变化。}
+    \label{fig:kmeans_selection}
+\end{figure}
+
+进一步观察 PCA 二维投影可以发现，PAM50 亚型在前两个主成分上并非完全线性可分，但 Basal-like 与部分 Luminal 样本之间存在一定分离趋势。K-means 的 \(k=3\) 聚类在该空间中形成了较清晰的区域划分，说明简单距离聚类已经能够捕捉部分蛋白质表达结构。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/pca_pam50_labels.png}
+        \caption{按 PAM50 mRNA 标签着色}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/pca_kmeans_clusters.png}
+        \caption{按 K-means 聚类标签着色}
+    \end{subfigure}
+    \caption{PAM50 蛋白表达在 PCA 二维空间中的分布。}
+    \label{fig:pca_kmeans}
+\end{figure}
+
+\subsection{DEC 深度嵌入聚类结果}
+
+DEC 的训练过程如图 \ref{fig:dec_training} 所示。自编码器重构误差随训练逐步下降，说明 10 维潜在表示保留了原始 43 维蛋白表达中的主要结构；随后 DEC 阶段的 KL 损失持续下降，说明软聚类分配逐渐变得稳定且更有置信度。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/dec_reconstruction_loss.png}
+        \caption{自编码器重构损失}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/dec_kl_loss.png}
+        \caption{DEC 聚类阶段 KL 损失}
+    \end{subfigure}
+    \caption{DEC 的训练损失曲线。}
+    \label{fig:dec_training}
+\end{figure}
+
+图 \ref{fig:dec_embedding} 对比了原始标准化特征空间的 PCA 投影和 DEC 潜在空间的 PCA 投影。在原始 PCA 空间中，DEC 聚类结果与 K-means 一样呈现出若干局部区域；而在 DEC 潜在空间中，模型会主动拉开样本与聚类中心之间的距离，使簇边界更加明显。这说明 DEC 确实学习到了更强的嵌入式聚类结构。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/pca_dec_clusters.png}
+        \caption{原始 PCA 空间中的 DEC 簇}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/latent_dec_clusters.png}
+        \caption{DEC 潜在空间中的 DEC 簇}
+    \end{subfigure}
+    \caption{DEC 聚类结果在不同表示空间中的可视化。}
+    \label{fig:dec_embedding}
+\end{figure}
+
+不过，聚类结构清晰并不等价于更接近 PAM50 mRNA 标签。图 \ref{fig:dec_pam50_relation} 显示，DEC 的 \(k=3\) 结果中有一个簇明显富集 Luminal A 样本，但 Basal-like、HER2-enriched 和 Luminal B 在其余两个簇中仍有混合。这表明 DEC 捕捉到的蛋白表达模式与 PAM50 mRNA 分型存在关联，但二者并不是完全一致的划分标准。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/latent_pam50_labels.png}
+        \caption{DEC 潜在空间按 PAM50 着色}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/clustering/pam50_dec_crosstab.png}
+        \caption{PAM50 与 DEC 簇的列联热图}
+    \end{subfigure}
+    \caption{DEC 聚类结果与 PAM50 mRNA 分型的对应关系。}
+    \label{fig:dec_pam50_relation}
+\end{figure}
+
+为了从蛋白表达模式本身解释聚类结果，图 \ref{fig:dec_heatmap} 将样本按照 DEC 簇排序，并展示 43 个 PAM50 蛋白的标准化表达值。不同簇之间可以观察到成块的高表达和低表达差异，说明聚类并不是随机划分，而是由若干蛋白表达组合共同驱动。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/clustering/dec_expression_heatmap.png}
+    \caption{按照 DEC 聚类结果排序后的 PAM50 蛋白表达热图。}
+    \label{fig:dec_heatmap}
+\end{figure}
+
+\subsection{模型对比与分析}
+
+表 \ref{tab:clustering_metrics} 和图 \ref{fig:method_comparison} 汇总了 K-means 与 DEC 的主要指标。K-means 在 \(k=3\) 时取得 ARI = 0.473、NMI = 0.504、V-measure = 0.501；DEC 在 \(k=3\) 时的外部一致性较低，ARI = 0.178、NMI = 0.224。将 DEC 改为 \(k=4\) 后，ARI 和 NMI 有所提升，但仍低于 K-means 基线。
+
+\begin{table}[htbp]
+    \centering
+    \caption{K-means 与 DEC 聚类指标对比}
+    \label{tab:clustering_metrics}
+    \begin{tabular}{lcccccc}
+        \toprule
+        方法 & \(k\) & Silhouette & ARI & NMI & Homogeneity & V-measure \\
+        \midrule
+        K-means & 3 & 0.127 & 0.473 & 0.504 & 0.451 & 0.501 \\
+        K-means & 4 & 0.126 & 0.457 & 0.480 & 0.485 & 0.480 \\
+        DEC & 3 & 0.074 & 0.178 & 0.224 & 0.202 & 0.223 \\
+        DEC & 4 & 0.094 & 0.269 & 0.337 & 0.340 & 0.337 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/clustering/method_metrics_comparison.png}
+    \caption{K-means 与 DEC 在主要聚类指标上的对比。}
+    \label{fig:method_comparison}
+\end{figure}
+
+综合来看，DEC 在潜在空间中能够形成更强的聚类嵌入，并帮助可视化蛋白表达结构；但在本数据集上，它并没有超过 K-means 与 PAM50 mRNA 标签之间的一致性。可能原因包括：样本数只有 77 个，深度模型容易受到小样本限制；43 个 PAM50 蛋白本身已经是强生物学先验特征，简单距离方法已经具有较强表现；此外，蛋白质组亚型与 mRNA 分型并不必然一一对应。因此，本节最终将 K-means 作为与 PAM50 对齐更好的基线结果，同时保留 DEC 作为深度嵌入聚类的探索性方法。

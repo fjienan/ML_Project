@@ -2,4 +2,127 @@
 
 \label{sec:own_problem}
 
-% TODO: define your own ML problem and analyze it
+\subsection{问题定义}
+
+除 PAM50 分型外，临床上淋巴结状态也是评估乳腺癌侵袭性和扩散风险的重要指标。若癌细胞已经累及淋巴结，通常意味着肿瘤具有更强的转移潜能，并可能影响后续治疗方案。因此，本节设计的自选问题为：能否利用乳腺癌蛋白质组表达谱预测患者是否存在淋巴结受累？
+
+本文使用临床字段 \texttt{Node-Coded} 作为预测标签。其中 \texttt{Negative} 对应 N0，即未发现淋巴结受累；\texttt{Positive} 对应 N1/N2/N3，即存在不同程度的淋巴结受累。在 77 个匹配蛋白质组样本中，\texttt{Negative} 样本为 39 个，\texttt{Positive} 样本为 38 个，类别分布较为均衡，如图 \ref{fig:node_distribution} 所示。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/own_problem/node_label_distribution.png}
+    \caption{\texttt{Node-Coded} 标签分布。}
+    \label{fig:node_distribution}
+\end{figure}
+
+\subsection{模型设计}
+
+与前面任务中只使用 PAM50 蛋白子集不同，本节使用全蛋白表达数据构建自选问题。由于原始蛋白特征超过 12,000 个，而样本数只有 77 个，直接训练复杂模型很容易过拟合。因此，本文在每个交叉验证 fold 内完成缺失率过滤、中位数填补、标准化以及高方差特征选择，最终保留训练集中方差最高的 500 个蛋白特征。所有预处理步骤均只在训练集上拟合，再应用到验证集，以避免数据泄漏。
+
+为了体现深度学习方法，本节采用 Denoising AutoEncoder + MLP 作为主模型。首先向输入蛋白表达加入轻微噪声，并训练自编码器重构原始表达向量：
+\[
+500 \rightarrow 128 \rightarrow 32 \rightarrow 128 \rightarrow 500.
+\]
+其中 32 维瓶颈层被视为样本的低维蛋白质组表示。随后，将该 latent representation 输入 MLP 分类器：
+\[
+32 \rightarrow 16 \rightarrow 1,
+\]
+输出样本属于 \texttt{Node-Coded Positive} 的概率。模型训练中使用 dropout、weight decay 和 early stopping 控制过拟合。
+
+为判断深度表示学习是否真正有价值，本文只选择三个具有代表性的模型进行比较，避免模型堆砌：Logistic Regression 作为可解释的线性基线，Random Forest 作为 bagging-family 集成学习基线，Denoising AE + MLP 作为深度学习主模型。所有模型均采用 stratified 5-fold cross-validation 评价，指标包括 Accuracy、Balanced Accuracy、F1、ROC-AUC 和 PR-AUC。
+
+\subsection{训练过程与低维表示}
+
+图 \ref{fig:own_training_curves} 展示了最终可视化模型的训练曲线。Denoising AutoEncoder 的重构误差整体下降，说明 32 维潜在空间能够保留部分蛋白表达结构；而 MLP 分类器的验证损失较早进入平台期，反映出小样本条件下深度监督模型的泛化空间有限。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/own_problem/dae_reconstruction_loss.png}
+        \caption{Denoising AutoEncoder 重构损失}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/own_problem/mlp_training_curve.png}
+        \caption{Latent MLP 分类损失}
+    \end{subfigure}
+    \caption{自选问题主模型的训练曲线。}
+    \label{fig:own_training_curves}
+\end{figure}
+
+图 \ref{fig:latent_node_pca} 将 AutoEncoder 学到的 32 维 latent representation 进一步投影到二维 PCA 空间，并按照 \texttt{Node-Coded} 标签着色。可以看到，阳性和阴性样本并没有形成完全分离的两个区域，说明淋巴结状态并不是由少数简单蛋白表达模式决定的；但局部区域中仍存在一定类别富集，提示蛋白质组信号可能包含与肿瘤侵袭性相关的信息。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.68\textwidth]{figures/own_problem/latent_node_pca.png}
+    \caption{AutoEncoder latent representation 按 \texttt{Node-Coded} 标签着色。}
+    \label{fig:latent_node_pca}
+\end{figure}
+
+\subsection{模型结果}
+
+表 \ref{tab:node_metrics} 汇总了 5-fold cross-validation 的平均结果。整体来看，三个模型的 ROC-AUC 都没有达到很高水平，说明仅凭 77 个样本的蛋白表达数据预测淋巴结状态具有较大难度。Logistic Regression 的 Balanced Accuracy 为 0.496，说明简单线性边界难以有效区分两类样本。Random Forest 的 Balanced Accuracy 约为 0.502，作为 bagging-family 非线性集成模型也只接近随机水平，提示蛋白表达与淋巴结状态之间的可学习信号较弱。
+
+相比之下，Denoising AE + MLP 的 F1 和 PR-AUC 为三个模型中最高，分别达到 0.463 和 0.586，但 ROC-AUC 仍只有 0.472。这说明深度表示学习在召回阳性样本方面有一定帮助，却尚不能形成稳定、强泛化的判别边界。
+
+\begin{table}[htbp]
+    \centering
+    \caption{\texttt{Node-Coded} 预测的 5-fold 平均指标}
+    \label{tab:node_metrics}
+    \begin{tabular}{lccccc}
+        \toprule
+        模型 & Accuracy & Balanced Acc. & F1 & ROC-AUC & PR-AUC \\
+        \midrule
+        Logistic Regression & 0.504 & 0.496 & 0.390 & 0.416 & 0.555 \\
+        Random Forest & 0.507 & 0.502 & 0.411 & 0.450 & 0.577 \\
+        Denoising AE + MLP & 0.468 & 0.470 & 0.463 & 0.472 & 0.586 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+图 \ref{fig:own_model_eval} 进一步展示了模型指标对比和交叉验证 ROC 曲线。不同模型的 ROC 曲线均接近对角线，说明该任务对当前数据规模而言仍具有明显挑战。主模型虽然没有显著提高整体 AUC，但其 PR-AUC 相对更高，在类别均衡但阳性样本临床意义更强的场景下仍具有一定参考价值。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/own_problem/model_metrics_comparison.png}
+        \caption{模型指标对比}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/own_problem/roc_curve.png}
+        \caption{交叉验证 ROC 曲线}
+    \end{subfigure}
+    \caption{\texttt{Node-Coded} 预测模型评价。}
+    \label{fig:own_model_eval}
+\end{figure}
+
+主模型的 out-of-fold 混淆矩阵如图 \ref{fig:node_confusion} 所示。Denoising AE + MLP 对 38 个阳性样本中预测正确 20 个，对 39 个阴性样本中预测正确 16 个。模型对阳性类别的识别略好于对阴性类别的识别，这也解释了其 F1 和 PR-AUC 相对较高、但 Balanced Accuracy 仍不高的现象。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/own_problem/confusion_matrix.png}
+    \caption{Denoising AE + MLP 的 out-of-fold 混淆矩阵。}
+    \label{fig:node_confusion}
+\end{figure}
+
+\subsection{蛋白重要性分析}
+
+为了初步解释主模型的预测依据，本文对最终模型进行输入扰动分析：每次随机打乱一个蛋白特征，观察预测概率的平均变化幅度。变化越大，说明该蛋白对模型输出越敏感。图 \ref{fig:top_node_proteins} 展示了排名靠前的蛋白，其中包括 CEACAM5、PLIN4、MYL10、AOC2、KRT2、ABAT、RARRES1、AGR3 和 SERPINB5 等。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.78\textwidth]{figures/own_problem/top_protein_importance.png}
+    \caption{Denoising AE + MLP 输入扰动分析得到的重要蛋白。}
+    \label{fig:top_node_proteins}
+\end{figure}
+
+需要注意的是，这里的重要性结果来自小样本深度模型，不能直接解释为因果关系或可靠生物标志物。它更适合作为后续实验的候选线索：如果某些蛋白在多次重采样或外部数据集中仍保持较高重要性，才更值得进一步生物学验证。
+
+\subsection{小结}
+
+本节自定义了一个与临床侵袭性相关的机器学习问题：利用蛋白质组表达预测淋巴结受累状态。实验表明，Denoising AutoEncoder 可以学习到一定的低维蛋白表达结构，且 AE + MLP 在 F1 和 PR-AUC 上略优于传统基线；但由于样本数仅为 77，所有模型的整体区分能力都较有限。因此，本节结论是：蛋白质组数据中可能包含与淋巴结状态相关的弱信号，但当前数据规模不足以训练出稳定的高性能深度分类器。该结果也说明，在医学小样本任务中，深度学习方法需要与严格交叉验证、基线对照和谨慎解释结合使用。
