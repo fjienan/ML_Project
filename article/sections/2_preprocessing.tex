@@ -1,9 +1,6 @@
-\section{数据预处理}
-
+\section{数据预处理操作}
 \label{sec:preprocessing}
-\section{数据预处理}
 
-\label{sec:preprocessing}
 \subsection{数据概述}
 本项目使用乳腺癌蛋白质表达与临床数据，共包含三个数据集：
 \begin{enumerate}
@@ -11,103 +8,47 @@
     \item \textbf{clinical\_data\_breast\_cancer.csv}：临床信息数据，包含样本PAM50分子分型标签。
     \item \textbf{PAM50\_proteins.csv}：PAM50分型系统对应的特征蛋白列表。
 \end{enumerate}
-\subsection{数据预处理流程}
-\subsubsection{数据清洗与格式标准化}
+
+\subsection{基础数据清洗}
 \begin{enumerate}
     \item 删除非数值特征列 \texttt{gene\_symbol}、\texttt{gene\_name}。
-    \item 去除样本ID中的多余符号，统一格式化为 \texttt{TCGA-XXX}。
-    \item 删除重复样本列，保留77例有效癌症样本。
-    \item 将矩阵转置，使每行代表一个样本，每列代表一个蛋白质特征。
+    \item 去除样本ID多余符号，统一规范为 \texttt{TCGA-XXX} 格式。
+    \item 剔除重复样本列，保留77份有效癌症样本数据。
+    \item 矩阵行列转置，设定单行对应单个样本、单列对应单项蛋白特征。
 \end{enumerate}
 
-\subsubsection{数据匹配与特征筛选}
+\subsection{特征匹配与筛选}
 \begin{enumerate}
-    \item 根据样本ID将蛋白质表达数据与临床数据进行匹配。
-    \item 依据PAM50蛋白列表，仅保留与分型相关的蛋白质特征。
+    \item 依据样本编号关联蛋白质表达数据与临床分型数据。
+    \item 参照PAM50特征蛋白清单，仅保留分型关联蛋白特征。
 \end{enumerate}
 
-\subsubsection{缺失值处理}
-采用中位数填充缺失值，避免样本丢失并减少异常值影响：
+\subsection{缺失值与异常值处理}
+由于蛋白质表达数据存在偏态分布与异常值，均值易受极端值干扰，
+而中位数具有稳健性，能更合理地代表蛋白质表达的中心趋势,
+因此，我们采用中位数填充方式补齐缺失数据，规避样本丢失问题，弱化异常数据干扰：
 \[
 x_{\text{imputed}} = \text{median}(x_{\text{observed}})
 \]
+本数据集的极端数值属于正常的蛋白表达差异，并非噪声错误，
+且中位数填充与标准化已有效降低异常值干扰，因此本实验不进行异常值截断，
+保留原始数据的生物学分布特征。
 
-\subsubsection{训练集与测试集划分}
-按照项目要求，采用分层抽样划分：
+\subsection{数据标准化}
+由于不同蛋白质的表达值存在天然的量纲与数值尺度差异，
+未标准化数据会导致尺度较大的特征在距离计算中占据主导，
+干扰聚类与分类模型的训练效果。
+因此，本研究在建模前对所有蛋白特征进行标准化处理，
+将所有特征统一为均值为 0、方差为 1 的标准分布，
+消除特征尺度不一致带来的偏差，
+保证各蛋白质特征对模型的贡献权重公平、有效，
+提升后续聚类与分类结果的准确性与可靠性。
+
+\subsection{数据集划分}
+采用分层抽样方式拆分样本，保证分型分布均衡统一：
 \begin{itemize}
-    \item 训练集：43例（含完整PAM50分型）
-    \item 测试集：34例
-    \item 分层依据：\texttt{PAM50 mRNA}，保证分布一致
+    \item 训练集：共计43例，携带完整PAM50分型标签
+    \item 测试集：共计34例
+    \item 分层依据：\texttt{PAM50 mRNA} 亚型类别
 \end{itemize}
-\subsection{预处理可视化结果}
 
-\subsubsection{原始数据缺失值分布}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{1_原始缺失值.png}
-    \caption{原始蛋白质数据缺失值分布热图}
-\end{figure}
-缺失值随机分布，无系统性缺失，适合中位数填充。
-
-\subsubsection{原始蛋白质表达值分布}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{2_原始表达值分布.png}
-    \caption{原始蛋白质表达值直方图}
-\end{figure}
-表达值近似正态分布，已做log2标准化，无需额外变换。
-
-\subsubsection{原始PAM50亚型分布}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{3_原始PAM50分布.png}
-    \caption{临床数据PAM50分子分型分布}
-\end{figure}
-数据存在轻度类别不平衡，LumA亚型样本数量最多。
-
-\subsubsection{处理后蛋白质表达值分布}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{4_处理后表达值分布.png}
-    \caption{缺失值填充后表达值分布}
-\end{figure}
-填充后数据分布保持连续，无明显偏移，填充策略有效。
-
-\subsubsection{训练集与测试集PAM50分布对比}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{5_训练测试集PAM50对比.png}
-    \caption{训练集与测试集PAM50亚型分布对比}
-\end{figure}
-训练集与测试集亚型比例高度一致，分层抽样有效。
-
-\subsection{预处理结果统计}
-\begin{table}[H]
-    \centering
-    \caption{数据预处理各阶段统计信息}
-    \begin{tabular}{lccc}
-        \toprule
-        处理阶段 & 样本数 & 特征数 & 处理方式 \\
-        \midrule
-        原始蛋白质数据 & 83列 & 12000+ & 存在缺失值 \\
-        去重后 & 77例 & 12000+ & 删除重复列 \\
-        PAM50特征筛选后 & 77例 & PAM50蛋白集 & 中位数填充 \\
-        训练集 & 43例 & PAM50蛋白集 & 无缺失 \\
-        测试集 & 34例 & PAM50蛋白集 & 无缺失 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\subsection{数据处理结论}
-\begin{enumerate}
-    \item 完成重复列删除、样本ID标准化、矩阵转置等清洗步骤。
-    \item 成功匹配蛋白质表达数据与临床标签数据。
-    \item 中位数填充有效保留数据分布，无明显偏差。
-    \item 分层抽样保证训练集与测试集PAM50分型分布一致。
-    \item 特征筛选降低维度，数据可直接用于聚类与分类建模。
-\end{enumerate}
-
-\end{document}
-% TODO: missing values, outliers, normalization, train/test split
-
-% TODO: missing values, outliers, normalization, train/test split

@@ -27,9 +27,9 @@ pam50 = pd.read_csv(pam50_proteins, header=0)
 # 1. 原始数据缺失值分布（患者缺失某蛋白质显示红色，不缺失就不显色）
 plt.figure(figsize=(10, 6))
 sns.heatmap(data_raw.isnull(), cbar=False, cmap="Reds", yticklabels=False)
-plt.title("原始数据缺失值分布", fontsize=14)
+plt.title("Missing Value Distribution of Raw Data", fontsize=14)
 plt.tight_layout()
-plt.savefig("1_原始缺失值.png", dpi=300)
+plt.savefig("1_missing_value.png", dpi=300)
 plt.show()
 
 # 2. 原始蛋白质表达值分布
@@ -39,20 +39,20 @@ expr_flat = expr_flat[~np.isnan(expr_flat)]
 
 plt.figure(figsize=(10, 6))
 plt.hist(expr_flat, bins=50, color="skyblue", alpha=0.7)
-plt.title("原始蛋白质表达值分布", fontsize=14)
-plt.xlabel("表达值")
-plt.ylabel("频数")
+plt.title("Distribution of Raw Protein Expression Values", fontsize=14)
+plt.xlabel("Expression Value")
+plt.ylabel("Frequency")
 plt.tight_layout()
-plt.savefig("2_原始表达值分布.png", dpi=300)
+plt.savefig("2_distribution_raw_pro_value.png", dpi=300)
 plt.show()
 
 # 3. 原始临床 PAM50 亚型分布
 plt.figure(figsize=(10, 6))
 clinical["PAM50 mRNA"].value_counts().plot(kind="bar", color="orange", alpha=0.7)
-plt.title("原始数据 PAM50 亚型分布", fontsize=14)
+plt.title("Distribution of Raw Clinical PAM50 Subtypes", fontsize=14)
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("3_原始PAM50分布.png", dpi=300)
+plt.savefig("3_distribution_raw_pam50.png", dpi=300)
 plt.show()
 #PAM50 是乳腺癌分子分型（LumA、LumB、Basal、HER2 等）
 #这张图展示各类别样本数量是否均衡
@@ -94,9 +94,11 @@ train_set, test_set = train_test_split(
 # 2. 处理后表达值分布
 plt.figure(figsize=(10, 6))
 plt.hist(final_df[feature_cols].values.flatten(), bins=50, color="lightgreen", alpha=0.7)
-plt.title("处理后表达值分布", fontsize=14)
+plt.title("Distribution of Processed Protein Expression Values", fontsize=14)
+plt.xlabel("Expression Value")
+plt.ylabel("Frequency")
 plt.tight_layout()
-plt.savefig("4_处理后表达值分布.png", dpi=300)
+plt.savefig("4_distribution_processed_pro_value.png", dpi=300)
 plt.show()
 
 # 3. 训练集 / 测试集 PAM50 分层分布对比
@@ -106,13 +108,13 @@ test_pam = test_set['PAM50 mRNA'].value_counts().sort_index()
 x = np.arange(len(train_pam))
 width = 0.35
 
-plt.bar(x - width/2, train_pam, width, label='训练集', color='dodgerblue')
-plt.bar(x + width/2, test_pam, width, label='测试集', color='coral')
-plt.title('训练集 vs 测试集 PAM50 亚型分布', fontsize=14)
+plt.bar(x - width/2, train_pam, width, label='Training Set', color='dodgerblue')
+plt.bar(x + width/2, test_pam, width, label='Testing Set', color='coral')
+plt.title('Distribution of PAM50 Subtypes in Training vs Testing Sets', fontsize=14)
 plt.xticks(x, train_pam.index, rotation=45)
 plt.legend()
 plt.tight_layout()
-plt.savefig("5_训练测试集PAM50对比.png", dpi=300)
+plt.savefig("5_training_testing_pam50_comparison.png", dpi=300)
 plt.show()
 
 # ===================== 保存文件 =====================

@@ -3,3 +3,77 @@
 \label{sec:data_exploration}
 
 % TODO: statistics and visualization
+
+\subsection{各维度可视化结果}
+本研究的可视化分析基于原始表达值与缺失值填充后的数据，以呈现真实分布；
+在聚类与分类建模前，会对特征执行标准化处理，以满足模型对特征尺度的要求。
+\subsubsection{原始数据缺失值分布}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{1_原始缺失值.png}
+    \caption{原始蛋白质数据缺失值分布热图}
+    \label{fig:missing_value}
+\end{figure}
+缺失值呈随机散布状态，不存在固定缺失规律，适配中位数填充处理方案。
+
+\subsubsection{原始蛋白质表达值分布}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{2_原始表达值分布.png}
+    \caption{原始蛋白质表达值直方图}
+    \label{fig:raw_expr_dist}
+\end{figure}
+数据经过log2预处理后近似符合正态分布，无需额外分布转换操作。
+
+\subsubsection{原始PAM50亚型分布}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{3_原始PAM50分布.png}
+    \caption{临床数据PAM50分子分型分布}
+    \label{fig:raw_pam50_dist}
+\end{figure}
+数据集存在轻微类别数量差异，其中LumA亚型样本占比最高。
+
+\subsubsection{处理后蛋白质表达值分布}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{4_处理后表达值分布.png}
+    \caption{缺失值填充后表达值分布}
+    \label{fig:proc_expr_dist}
+\end{figure}
+填充前后数据形态连贯，整体分布未发生明显偏移，处理方式具备有效性。
+
+\subsubsection{训练集与测试集PAM50分布对比}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{5_训练测试集PAM50对比.png}
+    \caption{训练集与测试集PAM50亚型分布对比}
+    \label{fig:train_test_pam}
+\end{figure}
+两组数据集亚型占比基本持平，分层抽样达到预期均衡效果。
+
+\subsection{预处理统计汇总}
+\begin{table}[htbp]
+    \centering
+    \caption{数据预处理各阶段统计信息}
+    \begin{tabular}{lccc}
+        \toprule
+        处理阶段 & 样本数 & 特征数 & 处理方式 \\
+        \midrule
+        原始蛋白质数据 & 83列 & 12000+ & 存在缺失值 \\
+        去重后 & 77例 & 12000+ & 删除重复列 \\
+        PAM50特征筛选后 & 77例 & PAM50蛋白集 & 中位数填充 \\
+        训练集 & 43例 & PAM50蛋白集 & 无缺失 \\
+        测试集 & 34例 & PAM50蛋白集 & 无缺失 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{处理总结}
+\begin{enumerate}
+    \item 完成数据清洗、编号规整、矩阵结构调整等基础操作。
+    \item 实现表达数据与临床标签精准匹配，筛选有效建模特征。
+    \item 缺失值、异常值处理合理，数据整体分布保持稳定。
+    \item 标准化消除量纲影响，分层划分保证数据集分布一致性。
+    \item 预处理后数据质量达标，可开展后续聚类与分类建模实验。
+\end{enumerate}
