@@ -5,9 +5,16 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV
+from sklearn import tree
+
+# ===================== 自动创建保存路径 =====================
+save_dir = "figures/classification"
+os.makedirs(save_dir, exist_ok=True)
 
 # ===================== 1. 读取数据 =====================
 train_set = pd.read_csv("train_set.csv", index_col=0)
@@ -19,26 +26,18 @@ y_train = train_set['PAM50 mRNA']
 X_test = test_set.drop(columns=['PAM50 mRNA'])
 y_test = test_set['PAM50 mRNA']
 
-# ===================== 3. 优化版参数网格（防过拟合 + 小样本专用） =====================
-# 【作业可写】参数依据：
-# n_estimators：决策树数量，小样本 80~200 最优
-# max_depth：限制树深度，避免过深导致过拟合
-# min_samples_split：内部节点分裂最小样本数，控制树复杂度
-# min_samples_leaf：叶子节点最小样本数，强力防过拟合
-# class_weight='balanced'：解决癌症亚型样本不平衡
-
+# ===================== 3. 优化版参数网格 =====================
 param_grid = {
     'n_estimators': [100, 150, 200],
-    'max_depth': [5, 6, 7, 8],          # 限制深度 → 防过拟合
-    'min_samples_split': [2, 3, 4],     # 控制分裂
-    'min_samples_leaf': [1, 2]          # 🔥 新增：防过拟合最重要参数
+    'max_depth': [5, 6, 7, 8],
+    'min_samples_split': [2, 3, 4],
+    'min_samples_leaf': [1, 2]
 }
 
-# 网格搜索
 grid_search = GridSearchCV(
     RandomForestClassifier(random_state=42, class_weight="balanced"),
     param_grid,
-    cv=3,          # 小样本用3折交叉验证
+    cv=3,
     scoring="accuracy",
     n_jobs=-1
 )
@@ -52,7 +51,6 @@ print("=" * 60)
 
 # ===================== 5. 预测与评估 =====================
 y_pred = best_rf.predict(X_test)
-
 train_acc = best_rf.score(X_train, y_train)
 test_acc = best_rf.score(X_test, y_test)
 
@@ -70,10 +68,63 @@ imp_df = pd.DataFrame({
 print("\n🔥 Top 10 关键蛋白质：")
 print(imp_df.head(10))
 
-# ===================== 7. 画图 =====================
+# ==============================================
+# 可视化1：Top10 蛋白质重要性（自动保存）
+# ==============================================
 plt.figure(figsize=(10, 6))
-plt.barh(imp_df["Protein_ID"][:10][::-1], imp_df["Importance"][:10][::-1])
+plt.barh(imp_df["Protein_ID"][:10][::-1], imp_df["Importance"][:10][::-1], color='#1f77b4')
 plt.xlabel("Importance Score")
 plt.title("Top 10 Important Proteins (Optimized Random Forest)")
 plt.tight_layout()
-plt.show()
+plt.savefig(f"{save_dir}/rf_top10_proteins.png", dpi=300, bbox_inches='tight')
+plt.close()
+
+# ==============================================
+# 可视化2：训练 vs 测试准确率（自动保存）
+# ==============================================
+plt.figure(figsize=(6, 5))
+models = ['Train Accuracy', 'Test Accuracy']
+accs = [train_acc, test_acc]
+colors = ['#2ca02c', '#ff7f0e']
+plt.bar(models, accs, color=colors)
+plt.ylim(0, 1.1)
+plt.title('Random Forest Train vs Test Accuracy')
+plt.ylabel('Accuracy')
+for i, v in enumerate(accs):
+    plt.text(i, v + 0.02, f'{v:.3f}', ha='center')
+plt.tight_layout()
+plt.savefig(f"{save_dir}/rf_accuracy.png", dpi=300, bbox_inches='tight')
+plt.close()
+
+# ==============================================
+# 可视化3：混淆矩阵（自动保存）
+# ==============================================
+cm = confusion_matrix(y_test, y_pred)
+labels = sorted(y_test.unique())
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels)
+plt.title('Confusion Matrix (Random Forest)')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.tight_layout()
+plt.savefig(f"{save_dir}/rf_confusion_matrix.png", dpi=300, bbox_inches='tight')
+plt.close()
+
+# ==============================================
+# 可视化4：单棵决策树结构（自动保存）
+# ==============================================
+plt.figure(figsize=(18, 12))
+tree.plot_tree(
+    best_rf.estimators_[0],
+    feature_names=X_train.columns,
+    class_names=labels,
+    filled=True,
+    rounded=True,
+    fontsize=8
+)
+plt.title('Single Decision Tree from Optimized Random Forest')
+plt.tight_layout()
+plt.savefig(f"{save_dir}/rf_tree_structure.png", dpi=300, bbox_inches='tight')
+plt.close()
+
+print(f"\n✅ 所有随机森林图片已保存到：{save_dir}")
