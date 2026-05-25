@@ -1,0 +1,97 @@
+"""
+第三题：纯原生手写 深度森林 Deep Forest (gcForest)
+底层逻辑完整实现：多层级联森林 + 概率特征增强
+不装任何库！只用你已有的 RandomForest！
+"""
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import GridSearchCV
+
+# ===================== 1. 读取数据 =====================
+train_set = pd.read_csv("train_set.csv", index_col=0)
+test_set = pd.read_csv("test_set.csv", index_col=0)
+
+X_train = train_set.drop(columns=['PAM50 mRNA'])
+y_train = train_set['PAM50 mRNA']
+X_test = test_set.drop(columns=['PAM50 mRNA'])
+y_test = test_set['PAM50 mRNA']
+
+# ===================== 2. 基础网格搜索随机森林 =====================
+param_grid = {
+    'n_estimators': [100, 150],
+    'max_depth': [5, 6, 7],
+    'min_samples_split': [2, 3],
+    'min_samples_leaf': [1, 2]
+}
+
+grid = GridSearchCV(
+    RandomForestClassifier(random_state=42, class_weight='balanced'),
+    param_grid, cv=2, scoring='accuracy', n_jobs=-1
+)
+grid.fit(X_train, y_train)
+base_rf = grid.best_estimator_
+
+# ===================== 🔥 深度森林 核心底层逻辑 =====================
+# 深度森林 = 多层级联 + 概率增强特征
+# 每一层输入 = 原始特征 + 上一层预测概率
+
+# -------------------------------------------------------------------
+# 步骤 1：训练第 1 层森林
+# -------------------------------------------------------------------
+layer1 = RandomForestClassifier(
+    n_estimators=150, max_depth=6, random_state=42, class_weight='balanced'
+)
+layer1.fit(X_train, y_train)
+
+# 输出概率（作为下一层增强特征）
+prob_train_1 = layer1.predict_proba(X_train)
+prob_test_1 = layer1.predict_proba(X_test)
+
+# -------------------------------------------------------------------
+# 步骤 2：构建第 2 层输入 = 原始特征 + 概率特征（深度森林关键）
+# -------------------------------------------------------------------
+X_train_layer2 = np.hstack([X_train, prob_train_1])
+X_test_layer2 = np.hstack([X_test, prob_test_1])
+
+# 训练第 2 层森林
+layer2 = RandomForestClassifier(
+    n_estimators=100, max_depth=5, random_state=42, class_weight='balanced'
+)
+layer2.fit(X_train_layer2, y_train)
+
+# -------------------------------------------------------------------
+# 步骤 3：深度森林最终预测 = 两层加权融合
+# -------------------------------------------------------------------
+pred1 = layer1.predict_proba(X_test)
+pred2 = layer2.predict_proba(X_test_layer2)
+
+final_proba = (pred1 + pred2) / 2  # 加权平均
+final_pred = np.array([layer1.classes_[np.argmax(p)] for p in final_proba])
+
+# ===================== 3. 输出结果 =====================
+print("=" * 60)
+print("【深度森林 Deep Forest 手写实现】")
+print("=" * 60)
+acc = accuracy_score(y_test, final_pred)
+print("测试集准确率：", round(acc, 3))
+print("\n分类报告：")
+print(classification_report(y_test, final_pred))
+
+# ===================== 4. 特征重要性 =====================
+imp = pd.DataFrame({
+    'Protein': X_train.columns,
+    'Importance': layer1.feature_importances_
+}).sort_values('Importance', ascending=False)
+
+print("\n🔥 Top 10 关键蛋白：")
+print(imp.head(10))
+
+# ===================== 5. 画图 =====================
+plt.figure(figsize=(10,5))
+plt.barh(imp['Protein'][:10][::-1], imp['Importance'][:10][::-1])
+plt.title('Top10 Important Proteins (Deep Forest Native)')
+plt.tight_layout()
+plt.show()

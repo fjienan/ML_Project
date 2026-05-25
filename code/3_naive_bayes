@@ -1,0 +1,38 @@
+"""
+朴素贝叶斯（小样本专用｜几乎不过拟合）
+"""
+import pandas as pd
+import numpy as np
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, classification_report
+
+# 读取数据
+train = pd.read_csv("train_set.csv", index_col=0)
+test = pd.read_csv("test_set.csv", index_col=0)
+
+X_train = train.drop("PAM50 mRNA", axis=1)
+y_train = train["PAM50 mRNA"]
+X_test = test.drop("PAM50 mRNA", axis=1)
+y_test = test["PAM50 mRNA"]
+
+# 朴素贝叶斯（小样本神器）
+model = GaussianNB()
+model.fit(X_train, y_train)
+import numpy as np
+
+corr = np.corrcoef(X_train.T)
+corr_abs = np.abs(corr)
+np.fill_diagonal(corr_abs, 0)  # 去掉自身相关
+avg_corr = np.mean(corr_abs)
+print(f"特征间平均相关系数绝对值：{avg_corr:.3f}")
+
+# 预测
+y_pred = model.predict(X_test)
+train_acc = model.score(X_train, y_train)
+test_acc = accuracy_score(y_test, y_pred)
+
+print("【朴素贝叶斯】")
+print(f"训练准确率：{train_acc:.3f}")
+print(f"测试准确率：{test_acc:.3f}")
+print("\n分类报告：")
+print(classification_report(y_test, y_pred))

@@ -1,0 +1,79 @@
+"""
+第三题：随机森林分类（强化防过拟合 + 网格搜索优化版）
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import GridSearchCV
+
+# ===================== 1. 读取数据 =====================
+train_set = pd.read_csv("train_set.csv", index_col=0)
+test_set = pd.read_csv("test_set.csv", index_col=0)
+
+# ===================== 2. 特征与标签 =====================
+X_train = train_set.drop(columns=['PAM50 mRNA'])
+y_train = train_set['PAM50 mRNA']
+X_test = test_set.drop(columns=['PAM50 mRNA'])
+y_test = test_set['PAM50 mRNA']
+
+# ===================== 3. 优化版参数网格（防过拟合 + 小样本专用） =====================
+# 【作业可写】参数依据：
+# n_estimators：决策树数量，小样本 80~200 最优
+# max_depth：限制树深度，避免过深导致过拟合
+# min_samples_split：内部节点分裂最小样本数，控制树复杂度
+# min_samples_leaf：叶子节点最小样本数，强力防过拟合
+# class_weight='balanced'：解决癌症亚型样本不平衡
+
+param_grid = {
+    'n_estimators': [100, 150, 200],
+    'max_depth': [5, 6, 7, 8],          # 限制深度 → 防过拟合
+    'min_samples_split': [2, 3, 4],     # 控制分裂
+    'min_samples_leaf': [1, 2]          # 🔥 新增：防过拟合最重要参数
+}
+
+# 网格搜索
+grid_search = GridSearchCV(
+    RandomForestClassifier(random_state=42, class_weight="balanced"),
+    param_grid,
+    cv=3,          # 小样本用3折交叉验证
+    scoring="accuracy",
+    n_jobs=-1
+)
+grid_search.fit(X_train, y_train)
+best_rf = grid_search.best_estimator_
+
+# ===================== 4. 输出最优参数 =====================
+print("=" * 60)
+print("✅ 最优参数：", grid_search.best_params_)
+print("=" * 60)
+
+# ===================== 5. 预测与评估 =====================
+y_pred = best_rf.predict(X_test)
+
+train_acc = best_rf.score(X_train, y_train)
+test_acc = best_rf.score(X_test, y_test)
+
+print("\n训练集准确率：", round(train_acc, 3))
+print("测试集准确率：", round(test_acc, 3))
+print("\n分类报告：")
+print(classification_report(y_test, y_pred))
+
+# ===================== 6. 特征重要性 =====================
+imp_df = pd.DataFrame({
+    "Protein_ID": X_train.columns,
+    "Importance": best_rf.feature_importances_
+}).sort_values("Importance", ascending=False)
+
+print("\n🔥 Top 10 关键蛋白质：")
+print(imp_df.head(10))
+
+# ===================== 7. 画图 =====================
+plt.figure(figsize=(10, 6))
+plt.barh(imp_df["Protein_ID"][:10][::-1], imp_df["Importance"][:10][::-1])
+plt.xlabel("Importance Score")
+plt.title("Top 10 Important Proteins (Optimized Random Forest)")
+plt.tight_layout()
+plt.show()
