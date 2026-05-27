@@ -1,0 +1,14 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/c:\\Users\\HUAWEI\\Desktop\\ML_Project\\article\\sections\\5_classification.aux": true,
+        "**/c:\\Users\\HUAWEI\\Desktop\\ML_Project\\article\\sections\\5_classification.log": true,
+        "**/c:\\Users\\HUAWEI\\Desktop\\ML_Project\\article\\sections\\5_classification.gz": true,
+        "**/c:\\Users\\HUAWEI\\Desktop\\ML_Project\\article\\sections\\5_classification.out": true
+    }
+}

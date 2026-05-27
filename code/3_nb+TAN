@@ -1,0 +1,129 @@
+import pandas as pd
+import numpy as np
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.naive_bayes import GaussianNB
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import minimum_spanning_tree
+from scipy.stats import pearsonr
+
+# ===================== 读取数据 =====================
+train = pd.read_csv("train_set.csv", index_col=0)
+test = pd.read_csv("test_set.csv", index_col=0)
+
+X_train = train.drop("PAM50 mRNA", axis=1).values
+y_train = train["PAM50 mRNA"].values
+X_test = test.drop("PAM50 mRNA", axis=1).values
+y_test = test["PAM50 mRNA"].values
+
+le = LabelEncoder()
+y_train = le.fit_transform(y_train)
+y_test = le.transform(y_test)
+
+# 标准化
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# ===================== TAN 模型（你原来的） =====================
+class TANClassifier:
+    def __init__(self):
+        self.classes_ = None
+        self.n_classes = 0
+        self.n_features = 0
+        self.theta = None
+        self.var = None
+        self.prior = None
+
+    def fit(self, X, y):
+        X = np.asarray(X)
+        y = np.asarray(y)
+        self.classes_ = np.unique(y)
+        self.n_classes = len(self.classes_)
+        self.n_features = X.shape[1]
+
+        self.theta = np.zeros((self.n_classes, self.n_features))
+        self.var = np.zeros((self.n_classes, self.n_features))
+        for c_idx, c in enumerate(self.classes_):
+            X_c = X[y == c]
+            self.theta[c_idx] = np.mean(X_c, axis=0)
+            self.var[c_idx] = np.var(X_c, axis=0)
+
+        self.var = np.clip(self.var, 1e-8, np.percentile(self.var, 90))
+        self.prior = np.log(np.bincount(y) / len(y) + 1e-10)
+        dist_matrix = 1 - np.abs(np.corrcoef(X.T))
+        mst = minimum_spanning_tree(csr_matrix(dist_matrix)).toarray()
+        self.parent = np.full(self.n_features, -1)
+        for i in range(self.n_features):
+            for j in range(i+1, self.n_features):
+                if mst[i,j] > 0 and self.parent[j] == -1:
+                    self.parent[j] = i
+        return self
+
+    def _log_prob(self, x):
+        log_probs = np.zeros(self.n_classes)
+        for c in range(self.n_classes):
+            lp = 0
+            for f in range(self.n_features):
+                mu = self.theta[c,f]
+                var = self.var[c,f]
+                lp += -0.5*np.log(2*np.pi*var) - ((x[f]-mu)**2)/(2*var)
+            log_probs[c] = lp + self.prior[c]
+        return log_probs
+
+    def predict(self, X):
+        return np.array([self.classes_[np.argmax(self._log_prob(x))] for x in X])
+
+# ===================== 训练两个模型 =====================
+tan = TANClassifier()
+tan.fit(X_train, y_train)
+
+nb = GaussianNB()
+nb.fit(X_train, y_train)
+
+# ===================== 🔥 真正每个样本独立判断（修复版） =====================
+# ---------- 融合预测（取代你之前的 per_sample 硬切）----------
+def compute_rho(X):
+    n_features = X.shape[1]
+    corr_sum = 0.0
+    count = 0
+    for i in range(n_features):
+        for j in range(i+1, n_features):
+            corr, _ = pearsonr(X[:,i], X[:,j])
+            corr_sum += abs(corr)
+            count += 1
+    rho = corr_sum / count
+    return rho
+
+rho = compute_rho(X_train)
+lam = 0.7  # 你可以在验证集调0.5~1.0
+alpha = (1 - rho) * lam
+print(f"特征整体相关性 rho = {rho:.3f}")
+print(f"自适应权重 alpha = {alpha:.3f}")
+
+# ---------- 2. 融合预测（不变） ----------
+def predict_ensemble(x, alpha=alpha):
+    nb_log_prob = nb.predict_log_proba(x.reshape(1, -1))[0]
+    tan_log_prob = tan._log_prob(x)
+    fused_log_prob = alpha * nb_log_prob + (1 - alpha) * tan_log_prob
+    return np.argmax(fused_log_prob)
+def predict_ensemble(x, alpha=0.524):
+    # alpha=0.5：NB 和 TAN 各占一半
+    nb_log_prob = nb.predict_log_proba(x.reshape(1, -1))[0]
+    tan_log_prob = tan._log_prob(x)
+
+    # 加权融合
+    fused_log_prob = alpha * nb_log_prob + (1 - alpha) * tan_log_prob
+    return np.argmax(fused_log_prob)
+
+# 预测
+y_train_pred = [predict_ensemble(x) for x in X_train]
+y_test_pred = [predict_ensemble(x) for x in X_test]
+
+train_acc = accuracy_score(y_train, y_train_pred)
+test_acc = accuracy_score(y_test, y_test_pred)
+
+print("===== 融合模型（NB + TAN）=====")
+print(f"训练准确率: {train_acc:.3f}")
+print(f"测试准确率: {test_acc:.3f}")
+print(f"拟合差距: {train_acc - test_acc:.3f}")
