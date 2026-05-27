@@ -89,7 +89,7 @@ weighted avg & 0.881 & 0.882 & 0.881 & 30 \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/classification/fusion_top10_features_bayesian.png}
+\includegraphics[width=0.8\textwidth]{figures/classification/nb_tan_top10_features.png}
 \caption{基于贝叶斯融合模型的 Top‑10 关键蛋白质特征（按亚型区分度排序）}
 \label{fig:fusion_top10_features}
 \end{figure}
@@ -109,6 +109,16 @@ weighted avg & 0.881 & 0.882 & 0.881 & 30 \\
 \end{figure}
 
 随机森林作为主流集成树模型，虽擅长捕捉非线性关系，但在本次任务中暴露明显缺陷。该模型由多棵决策树组合而成，模型复杂度高、拟合能力强，在仅有43条训练样本的限制下，极易学习到训练集中的随机噪声与局部特例，造成严重过拟合。实验中随机森林训练准确率达到1.000，测试准确率仅为0.765，拟合差距高达0.235，泛化能力大幅下降。同时，面对高维小样本数据，树模型缺乏强正则约束，对样本不均衡的小亚型适配能力不足，最终分类效果远弱于贝叶斯融合模型。
+
+为进一步验证融合模型的鲁棒性，本文绘制了纯NB、融合模型与纯TAN的多分类ROC曲线（Micro-AUC），如图 \ref{fig:roc_comparison} 所示。
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/classification/roc_comparison.png}
+\caption{纯NB vs 融合模型 vs 纯TAN — ROC曲线对比}
+\label{fig:roc_comparison}
+\end{figure}
+
+曲线显示，融合模型的Micro-AUC为0.8642，显著高于纯TAN的0.8002，表明其在概率排序与类别区分能力上更优。尽管纯NB的AUC（0.9083）最高，但其准确率仅为0.824，说明其概率排序能力虽强，但最终硬分类决策的泛化能力不足。融合模型在保持与纯TAN相同准确率（0.882）的同时，显著提升了概率输出的可靠性，实现了准确率与鲁棒性的双重优势。
 
 \subsection{小结}
 综合对比所有模型，基于高斯朴素贝叶斯与 TAN 的自适应加权融合模型在本次乳腺癌分子分型任务中取得最优分类性能与泛化能力。随机森林与深度森林因模型复杂度较高，在小样本条件下产生明显过拟合，泛化性能较差；单一高斯朴素贝叶斯无法利用局部特征关联，性能存在上限。

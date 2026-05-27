@@ -1,11 +1,19 @@
 import pandas as pd
 import numpy as np
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import (
+    accuracy_score, classification_report,
+    cohen_kappa_score, log_loss,
+    confusion_matrix, ConfusionMatrixDisplay,
+    roc_curve, auc, roc_auc_score
+)
+from sklearn.preprocessing import LabelEncoder, StandardScaler, label_binarize
 from sklearn.naive_bayes import GaussianNB
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
 from scipy.stats import pearsonr
+from itertools import cycle
 
 # ===================== 读取数据 =====================
 train = pd.read_csv("train_set.csv", index_col=0)
@@ -19,13 +27,17 @@ y_test = test["PAM50 mRNA"].values
 le = LabelEncoder()
 y_train = le.fit_transform(y_train)
 y_test = le.transform(y_test)
+n_classes = len(le.classes_)
+
+# 标签二值化（用于多分类ROC）
+y_test_bin = label_binarize(y_test, classes=np.arange(n_classes))
 
 # 标准化
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# ===================== TAN 模型（你原来的） =====================
+# ===================== TAN 模型 =====================
 class TANClassifier:
     def __init__(self):
         self.classes_ = None
@@ -34,6 +46,7 @@ class TANClassifier:
         self.theta = None
         self.var = None
         self.prior = None
+        self.parent = None
 
     def fit(self, X, y):
         X = np.asarray(X)
@@ -73,57 +86,107 @@ class TANClassifier:
 
     def predict(self, X):
         return np.array([self.classes_[np.argmax(self._log_prob(x))] for x in X])
+    
+    def predict_log_proba(self, X):
+        return np.array([self._log_prob(x) for x in X])
 
-# ===================== 训练两个模型 =====================
+# ===================== 训练模型 =====================
 tan = TANClassifier()
 tan.fit(X_train, y_train)
-
 nb = GaussianNB()
 nb.fit(X_train, y_train)
 
-# ===================== 🔥 真正每个样本独立判断（修复版） =====================
-# ---------- 融合预测（取代你之前的 per_sample 硬切）----------
-def compute_rho(X):
-    n_features = X.shape[1]
-    corr_sum = 0.0
-    count = 0
-    for i in range(n_features):
-        for j in range(i+1, n_features):
-            corr, _ = pearsonr(X[:,i], X[:,j])
-            corr_sum += abs(corr)
-            count += 1
-    rho = corr_sum / count
-    return rho
+# ===================== 融合预测函数（返回概率/对数概率） =====================
+def predict_ensemble_log_prob(X, alpha):
+    # 返回 (n_samples, n_classes) 对数概率
+    nb_log = nb.predict_log_proba(X)
+    tan_log = tan.predict_log_proba(X)
+    fused = alpha * nb_log + (1 - alpha) * tan_log
+    return fused
 
-rho = compute_rho(X_train)
-lam = 0.7  # 你可以在验证集调0.5~1.0
-alpha = (1 - rho) * lam
-print(f"特征整体相关性 rho = {rho:.3f}")
-print(f"自适应权重 alpha = {alpha:.3f}")
+# ===================== 计算各模型指标（含AUC） =====================
+alphas = [1.0, 0.524, 0.0]
+model_names = ["纯NB", "融合α=0.524", "纯TAN"]
+results = []
 
-# ---------- 2. 融合预测（不变） ----------
-def predict_ensemble(x, alpha=alpha):
-    nb_log_prob = nb.predict_log_proba(x.reshape(1, -1))[0]
-    tan_log_prob = tan._log_prob(x)
-    fused_log_prob = alpha * nb_log_prob + (1 - alpha) * tan_log_prob
-    return np.argmax(fused_log_prob)
-def predict_ensemble(x, alpha=0.524):
-    # alpha=0.5：NB 和 TAN 各占一半
-    nb_log_prob = nb.predict_log_proba(x.reshape(1, -1))[0]
-    tan_log_prob = tan._log_prob(x)
+for a, name in zip(alphas, model_names):
+    # 对数概率
+    log_prob = predict_ensemble_log_prob(X_test, a)
+    # 预测标签
+    y_pred = np.argmax(log_prob, axis=1)
+    # 概率（用于AUC）
+    prob = np.exp(log_prob)
+    
+    # 指标
+    acc = accuracy_score(y_test, y_pred)
+    kappa = cohen_kappa_score(y_test, y_pred)
+    macro_auc = roc_auc_score(y_test_bin, prob, average='macro')
+    micro_auc = roc_auc_score(y_test_bin, prob, average='micro')
+    
+    results.append({
+        "模型": name,
+        "准确率": acc,
+        "Kappa": kappa,
+        "Macro-AUC": macro_auc,
+        "Micro-AUC": micro_auc
+    })
 
-    # 加权融合
-    fused_log_prob = alpha * nb_log_prob + (1 - alpha) * tan_log_prob
-    return np.argmax(fused_log_prob)
+# 打印对比表
+print("\n===== 模型性能对比（含AUC）=====")
+for res in results:
+    print(f"{res['模型']:10} | Acc: {res['准确率']:.4f} | Kappa: {res['Kappa']:.4f} | Macro-AUC: {res['Macro-AUC']:.4f} | Micro-AUC: {res['Micro-AUC']:.4f}")
 
-# 预测
-y_train_pred = [predict_ensemble(x) for x in X_train]
-y_test_pred = [predict_ensemble(x) for x in X_test]
+# ===================== 绘制ROC曲线（3模型同图对比） =====================
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 
-train_acc = accuracy_score(y_train, y_train_pred)
-test_acc = accuracy_score(y_test, y_test_pred)
+fig, ax = plt.subplots(figsize=(10, 8))
+colors = ['#ff7f0e', '#2ca02c', '#1f77b4']
+linestyles = ['--', '-', ':']
 
-print("===== 融合模型（NB + TAN）=====")
-print(f"训练准确率: {train_acc:.3f}")
-print(f"测试准确率: {test_acc:.3f}")
-print(f"拟合差距: {train_acc - test_acc:.3f}")
+for idx, (a, name) in enumerate(zip(alphas, model_names)):
+    prob = np.exp(predict_ensemble_log_prob(X_test, a))
+    # 微平均ROC
+    fpr_micro, tpr_micro, _ = roc_curve(y_test_bin.ravel(), prob.ravel())
+    auc_micro = auc(fpr_micro, tpr_micro)
+    ax.plot(fpr_micro, tpr_micro, color=colors[idx], linestyle=linestyles[idx],
+             lw=2, label=f'{name} (Micro-AUC={auc_micro:.4f})')
+
+# 随机线
+ax.plot([0, 1], [0, 1], 'k--', lw=1.5, label='随机猜测')
+ax.set_xlabel('False Positive Rate (FPR)')
+ax.set_ylabel('True Positive Rate (TPR)')
+ax.set_title('纯NB vs 融合模型 vs 纯TAN — ROC曲线对比')
+ax.legend(loc='lower right')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('roc_comparison.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# ===================== 绘制各模型AUC柱状图 =====================
+plt.figure(figsize=(10, 6))
+x = np.arange(len(model_names))
+width = 0.35
+
+macro_aucs = [res['Macro-AUC'] for res in results]
+micro_aucs = [res['Micro-AUC'] for res in results]
+
+plt.bar(x - width/2, macro_aucs, width, label='Macro-AUC', color='#1f77b4')
+plt.bar(x + width/2, micro_aucs, width, label='Micro-AUC', color='#ff7f0e')
+
+plt.xlabel('模型')
+plt.ylabel('AUC')
+plt.title('各模型 Macro-AUC 与 Micro-AUC 对比')
+plt.xticks(x, model_names)
+plt.ylim(0.8, 0.95)
+plt.legend()
+# 加数值标签
+for i, v in enumerate(macro_aucs):
+    plt.text(i - width/2, v + 0.005, f'{v:.4f}', ha='center')
+for i, v in enumerate(micro_aucs):
+    plt.text(i + width/2, v + 0.005, f'{v:.4f}', ha='center')
+plt.tight_layout()
+plt.savefig('auc_comparison.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+print("\n✅ 已生成：roc_comparison.png（ROC曲线）、auc_comparison.png（AUC对比）")
