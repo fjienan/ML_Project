@@ -1,0 +1,501 @@
+﻿feature,gene_symbol,gene_name
+NP_002954,S100A7,protein S100-A7
+NP_789793,S100A7A,protein S100-A7A
+NP_477521,MUCL1,mucin-like protein 1 precursor
+NP_005743,,C-type lectin domain family 3 member A isoform 1 precursor
+NP_001231684,,C-type lectin domain family 3 member A isoform 2
+NP_004107,FKBP1B,peptidyl-prolyl cis-trans isomerase FKBP1B isoform a
+NP_005971,S100P,protein S100-P
+NP_001154829,FCHO1,FCH domain only protein 1 isoform a
+NP_004869,PTGES,prostaglandin E synthase
+NP_001004489,OR2AG1,olfactory receptor 2AG1
+NP_059118,CALML5,calmodulin-like protein 5
+NP_004282,CARTPT,cocaine- and amphetamine-regulated transcript protein preproprotein
+NP_057387,WBP5,WW domain-binding protein 5
+NP_000660,,alcohol dehydrogenase 1C
+NP_116175,ZC3H10,zinc finger CCCH domain-containing protein 10
+NP_005969,S100A2,protein S100-A2
+NP_001437,FABP7,"fatty acid-binding protein, brain"
+NP_659453,GLYATL2,glycine N-acyltransferase-like protein 2
+NP_002956,S100A9,protein S100-A9
+NP_061962,HES2,transcription factor HES-2
+NP_056994,C2ORF86,WD repeat-containing and planar cell polarity effector protein fritz homolog
+NP_001472,GAS8,growth arrest-specific protein 8
+NP_997255,SH2D4B,SH2 domain-containing protein 4B isoform 1
+NP_002668,PMP2,myelin P2 protein
+NP_004935,DNASE1L3,deoxyribonuclease gamma isoform 1 precursor
+NP_000659,,alcohol dehydrogenase 1B
+NP_005267,GPD1,glycerol-3-phosphate dehydrogenase
+NP_006263,S100B,protein S100-B
+NP_001129575,TMEM132C,transmembrane protein 132C precursor
+NP_006724,CENPI,centromere protein I
+NP_612641,HDGFL1,hepatoma-derived growth factor-like protein 1
+NP_001032852,COL28A1,collagen alpha-1(XXVIII) chain precursor
+NP_055938,FRMD4B,FERM domain-containing protein 4B
+NP_001182225,,mirror-image polydactyly gene 1 protein
+NP_000918,ABCB1,multidrug resistance protein 1
+NP_001862,CPB1,carboxypeptidase B preproprotein
+NP_940887,TPRG1,tumor protein p63-regulated gene 1 protein
+NP_112583,PMFBP1,polyamine-modulated factor 1-binding protein 1 isoform a
+NP_002334,LTF,lactotransferrin isoform 1 precursor
+NP_061841,SNTG2,gamma-2-syntrophin
+NP_006262,S100A1,protein S100-A1
+NP_002955,S100A8,protein S100-A8
+NP_714543,GSTA5,glutathione S-transferase A5
+NP_065690,RIPK4,receptor-interacting serine/threonine-protein kinase 4
+NP_005785,DHRS2,dehydrogenase/reductase SDR family member 2 isoform 2
+NP_660157,DNAJB7,dnaJ homolog subfamily B member 7
+NP_776245,TPPP2,tubulin polymerization-promoting protein family member 2
+NP_878912,DHRS2,dehydrogenase/reductase SDR family member 2 isoform 1
+NP_002999,SEMG2,semenogelin-2 precursor
+NP_258259,KRT71,"keratin, type II cytoskeletal 71"
+NP_001127846,SPATC1,speriolin isoform 2
+XP_003960233,,PREDICTED: myomegalin-like isoform 1
+NP_054858,SCN11A,sodium channel protein type 11 subunit alpha
+NP_055006,SCN8A,sodium channel protein type 8 subunit alpha isoform 1
+NP_002643,PIP,prolactin-inducible protein precursor
+NP_065138,PLXDC1,plexin domain-containing protein 1 precursor
+NP_008959,TRIM31,E3 ubiquitin-protein ligase TRIM31
+NP_006505,SCN10A,sodium channel protein type 10 subunit alpha
+NP_444507,CLIC6,chloride intracellular channel protein 6
+NP_001167561,,sodium bicarbonate transporter-like protein 11 isoform 1
+NP_001092874,SCN5A,sodium channel protein type 5 subunit alpha isoform c
+XP_003403810,,PREDICTED: rootletin
+NP_001159435,SCN1A,sodium channel protein type 1 subunit alpha isoform 1
+NP_001120729,SLC39A10,zinc transporter ZIP10 precursor
+NP_006542,SCGB1D2,secretoglobin family 1D member 2 precursor
+NP_005509,HMGCS2,"hydroxymethylglutaryl-CoA synthase, mitochondrial isoform 1 precursor"
+NP_277055,C19ORF33,immortalization up-regulated protein
+NP_001164161,SCUBE2,"signal peptide, CUB and EGF-like domain-containing protein 2 isoform 2 precursor"
+NP_005612,S100A12,protein S100-A12
+NP_008853,SCN3A,sodium channel protein type 3 subunit alpha isoform 1
+NP_000325,SCN4A,sodium channel protein type 4 subunit alpha
+NP_004824,AIM2,interferon-inducible protein AIM2
+NP_001159432,ALOXE3,epidermis-type lipoxygenase 3 isoform 1 precursor
+NP_853515,KRT27,"keratin, type I cytoskeletal 27"
+NP_004920,CALB1,calbindin
+NP_002630,SERPINB5,serpin B5
+NP_665736,GFRA1,GDNF family receptor alpha-1 isoform b preproprotein
+NP_001138783,PLIN1,perilipin-1
+NP_002353,MAGEA4,melanoma-associated antigen 4
+NP_001128504,FAM176A,protein eva-1 homolog A
+NP_002677,PNMT,phenylethanolamine N-methyltransferase
+NP_005418,TP73,tumor protein p73 isoform a
+NP_003216,TFF1,trefoil factor 1 precursor
+NP_542193,BRI3BP,BRI3-binding protein precursor
+NP_005255,GFRA1,GDNF family receptor alpha-1 isoform a preproprotein
+NP_066287,SCN2A,sodium channel protein type 2 subunit alpha isoform 1
+NP_001161362,EGFL6,epidermal growth factor-like protein 6 isoform 2 precursor
+NP_666533,GSTM1,glutathione S-transferase Mu 1 isoform 2
+NP_001035530,CCDC112,coiled-coil domain-containing protein 112 isoform 1 precursor
+NP_000552,GSTM1,glutathione S-transferase Mu 1 isoform 1
+NP_783302,CNTN4,contactin-4 isoform c
+NP_001130,ALOX12B,"arachidonate 12-lipoxygenase, 12R-type"
+NP_002605,PDZK1,Na(+)/H(+) exchange regulatory cofactor NHE-RF3 isoform 1
+XP_003959988,,PREDICTED: golgin subfamily A member 8-like protein 2-like
+NP_149022,KRT82,"keratin, type II cuticular Hb2"
+NP_079195,FRMD1,FERM domain-containing protein 1 isoform 1
+NP_001120852,SAA2,serum amyloid A-2 protein isoform b precursor
+NP_001153651,NAT1,arylamine N-acetyltransferase 1 isoform a
+NP_997222,PAGE2,P antigen family member 2
+NP_001185982,,putative RNA exonuclease NEF-sp isoform 1
+NP_001015038,PAGE2B,putative G antigen family E member 3
+NP_066025,SCUBE2,"signal peptide, CUB and EGF-like domain-containing protein 2 isoform 1 precursor"
+NP_001159349,,"ATP synthase subunit g 2, mitochondrial"
+NP_001116539,MAPT,microtubule-associated protein tau isoform 5
+NP_963890,CACNB2,voltage-dependent L-type calcium channel subunit beta-2 isoform 2
+XP_003118566,,PREDICTED: rootletin
+NP_690008,HIF3A,hypoxia-inducible factor 3-alpha isoform c
+NP_001164432,IGSF1,immunoglobulin superfamily member 1 isoform 3 precursor
+NP_001433,FABP4,"fatty acid-binding protein, adipocyte"
+NP_001185624,,microfibril-associated glycoprotein 4 isoform 1 precursor
+NP_963891,CACNB2,voltage-dependent L-type calcium channel subunit beta-2 isoform 4
+NP_001073869,PLIN4,perilipin-4
+NP_005321,HBE1,hemoglobin subunit epsilon
+NP_055836,ZNF292,zinc finger protein 292
+NP_001087199,,dystrotelin
+NP_055835,PHLPP2,PH domain leucine-rich repeat-containing protein phosphatase 2
+NP_001177370,,galectin-16
+NP_003705,STC2,stanniocalcin-2 precursor
+NP_690865,PYDC1,pyrin domain-containing protein 1
+NP_001001414,NCCRP1,F-box only protein 50
+NP_776159,ZCCHC12,zinc finger CCHC domain-containing protein 12
+NP_002280,LALBA,alpha-lactalbumin precursor
+NP_006840,PDIA2,protein disulfide-isomerase A2 precursor
+NP_005555,LCN2,neutrophil gelatinase-associated lipocalin precursor
+NP_002968,SCN9A,sodium channel protein type 9 subunit alpha
+NP_996769,,coiled-coil domain-containing protein 18
+NP_778223,KRT74,"keratin, type II cytoskeletal 74"
+NP_058519,,microtubule-associated protein tau isoform 1
+NP_001020279,AFF3,AF4/FMR2 family member 3 isoform 2
+NP_004336,,cathelicidin antimicrobial peptide preproprotein
+NP_000842,GSTM5,glutathione S-transferase Mu 5
+NP_002635,PIGR,polymeric immunoglobulin receptor precursor
+NP_085135,ASXL3,putative Polycomb group protein ASXL3
+NP_058518,MAPT,microtubule-associated protein tau isoform 3
+NP_001258635,,izumo sperm-egg fusion protein 3 precursor
+NP_689540,AK7,adenylate kinase 7
+NP_000082,COL4A3,collagen alpha-3(IV) chain precursor
+NP_056382,SLITRK5,SLIT and NTRK-like protein 5 precursor
+NP_148935,OGN,mimecan preproprotein
+NP_001190181,,microtubule-associated protein tau isoform 8
+NP_115928,SLITRK2,SLIT and NTRK-like protein 2 precursor
+NP_000838,GSTA3,glutathione S-transferase A3
+NP_065148,RETN,resistin precursor
+NP_003970,GPRC5A,retinoic acid-induced protein 3
+NP_008874,SOX12,transcription factor SOX-12
+NP_000610,IFNG,interferon gamma precursor
+NP_937790,ABHD15,abhydrolase domain-containing protein 15 precursor
+NP_443175,FAM46B,protein FAM46B
+NP_110422,STMN4,stathmin-4
+NP_004369,CRABP1,cellular retinoic acid-binding protein 1
+NP_000550,HBG1,hemoglobin subunit gamma-1
+NP_078902,VTCN1,V-set domain-containing T-cell activation inhibitor 1 isoform 1 precursor
+NP_001230696,,transcription factor BTF3 homolog 4 isoform 3
+NP_006094,WFDC2,WAP four-disulfide core domain protein 2 precursor
+NP_000837,GSTA2,glutathione S-transferase A2
+NP_001073159,N4BP2L1,NEDD4-binding protein 2-like 1 isoform 2
+NP_000175,HBG2,hemoglobin subunit gamma-2
+NP_001138612,,putative uncharacterized protein CXorf49
+NP_444513,DCD,dermcidin preproprotein
+XP_003960166,,PREDICTED: peptidyl-prolyl cis-trans isomerase A-like
+NP_001231693,,TNFAIP3-interacting protein 3 isoform 3
+NP_006399,AGR2,anterior gradient protein 2 homolog precursor
+NP_005208,DEFA3,neutrophil defensin 3 preproprotein
+NP_665683,GSTA1,glutathione S-transferase A1
+NP_001345,AKR1C2,aldo-keto reductase family 1 member C2 isoform 1
+NP_001819,CLC,eosinophil lysophospholipase
+NP_000917,PGR,progesterone receptor isoform B
+NP_001493,GP2,pancreatic secretory granule membrane major glycoprotein GP2 isoform 2 precursor
+NP_694941,KIF19,kinesin-like protein KIF19
+NP_036233,TRIM29,tripartite motif-containing protein 29
+NP_036246,CASP14,caspase-14 precursor
+NP_002142,HPN,serine protease hepsin precursor
+NP_004952,GABRE,gamma-aminobutyric acid receptor subunit epsilon precursor
+NP_009231,BRCA1,breast cancer type 1 susceptibility protein isoform 2
+NP_001193884,,contactin-4 isoform a precursor
+NP_001266,CHGA,chromogranin-A preproprotein
+NP_001138600,AKD1,adenylate kinase domain-containing protein 1 isoform 1
+NP_066933,COL14A1,collagen alpha-1(XIV) chain precursor
+NP_056127,KIAA1109,uncharacterized protein KIAA1109
+NP_001810,CHGB,secretogranin-1 precursor
+NP_005932,MMP16,matrix metalloproteinase-16 precursor
+NP_002449,,mucin-5B precursor
+XP_001724434,,PREDICTED: golgin subfamily A member 8H isoform 1
+NP_789783,AGR3,anterior gradient protein 3 homolog precursor
+NP_003761,KRT37,"keratin, type I cuticular Ha7"
+NP_001258745,,DNA cross-link repair 1A protein
+NP_003099,SOX11,transcription factor SOX-11
+NP_064695,,aldo-keto reductase family 1 member B10
+NP_694957,C8ORF84,somatomedin-B and thrombospondin type-1 domain-containing protein precursor
+NP_001486,GFRA2,GDNF family receptor alpha-2 isoform a preproprotein
+NP_001129737,IFFO2,intermediate filament family orphan 2
+NP_001025031,FBXO43,F-box only protein 43
+NP_665698,TTC21A,tetratricopeptide repeat protein 21A isoform 2
+NP_000661,ADH4,alcohol dehydrogenase 4
+NP_001129396,VWDE,von Willebrand factor D and EGF domain-containing protein precursor
+NP_000841,GSTM4,glutathione S-transferase Mu 4 isoform 1
+NP_033720,AOC2,retina-specific copper amine oxidase isoform b precursor
+NP_078879,BEND5,BEN domain-containing protein 5
+XP_003960903,,PREDICTED: aldo-keto reductase family 1 member C2-like isoform 3
+NP_001257323,,cAMP-dependent protein kinase inhibitor beta isoform 2
+NP_001073583,LDB3,LIM domain-binding protein 3 isoform 2
+NP_001073954,,zinc finger protein 275
+NP_001006659,CR2,complement receptor type 2 isoform 1 precursor
+NP_110381,SAA2,serum amyloid A-2 protein isoform a precursor
+NP_127509,PLAT,tissue-type plasminogen activator isoform 3 preproprotein
+NP_057317,PADI3,protein-arginine deiminase type-3
+NP_113601,CECR2,cat eye syndrome critical region protein 2
+NP_071417,GAL3ST2,galactose-3-O-sulfotransferase 2
+NP_001264237,,golgin subfamily A member 8O
+NP_057051,PTPN22,tyrosine-protein phosphatase non-receptor type 22 isoform 1
+NP_000178,HGD,"homogentisate 1,2-dioxygenase"
+NP_068572,DNAJC12,dnaJ homolog subfamily C member 12 isoform a
+NP_006084,PRG3,proteoglycan 3 precursor
+NP_852091,CCDC39,coiled-coil domain-containing protein 39
+NP_742086,,TNFSF12-TNFSF13 protein
+NP_006409,OLFM4,olfactomedin-4 precursor
+NP_660295,ZG16B,zymogen granule protein 16 homolog B precursor
+NP_001001548,CD36,platelet glycoprotein 4
+NP_004481,GRB14,growth factor receptor-bound protein 14
+NP_001258,CHAD,chondroadherin precursor
+NP_766638,SCUBE1,"signal peptide, CUB and EGF-like domain-containing protein 1 precursor"
+NP_955387,ADAMTS18,A disintegrin and metalloproteinase with thrombospondin motifs 18 preproprotein
+NP_694566,PLB1,"phospholipase B1, membrane-associated isoform 1 precursor"
+NP_001882,CSN2,beta-casein precursor
+NP_778232,RASGEF1C,ras-GEF domain-containing family member 1C
+NP_775107,TRIM59,tripartite motif-containing protein 59
+NP_001191217,,mucin-1 isoform 12 precursor
+NP_003406,ZNF268,zinc finger protein 268 isoform a
+NP_001165081,LDB3,LIM domain-binding protein 3 isoform 5
+NP_001180386,,intermediate filament family orphan 1 isoform 5
+NP_653269,WDR66,WD repeat-containing protein 66 isoform 1
+NP_001030024,SMOC1,SPARC-related modular calcium-binding protein 1 isoform 1 precursor
+NP_001013768,ZNF107,zinc finger protein 107
+NP_009009,LDB3,LIM domain-binding protein 3 isoform 1
+NP_757385,SYVN1,E3 ubiquitin-protein ligase synoviolin isoform b precursor
+NP_001159365,NPAS3,neuronal PAS domain-containing protein 3 isoform 4
+XP_003960637,,PREDICTED: LOW QUALITY PROTEIN: golgin A6 family-like 3
+NP_778238,KRT73,"keratin, type II cytoskeletal 73"
+NP_055883,PEG10,retrotransposon-derived protein PEG10 isoform 1
+NP_060636,FAM176B,protein eva-1 homolog B
+NP_001127948,LRRC8B,leucine-rich repeat-containing protein 8B
+NP_443142,SLITRK1,SLIT and NTRK-like protein 1 precursor
+NP_005005,OMD,osteomodulin precursor
+NP_068818,,"major histocompatibility complex, class II, DR beta 4 precursor"
+NP_003003,SFRP1,secreted frizzled-related protein 1 precursor
+NP_000062,CBS,cystathionine beta-synthase
+NP_060034,STAB2,stabilin-2 precursor
+NP_001809,,aldo-keto reductase family 1 member C4
+NP_001014305,DCUN1D2,DCN1-like protein 2
+NP_006762,KRT38,"keratin, type I cuticular Ha8"
+NP_001344,AKR1C1,aldo-keto reductase family 1 member C1
+NP_000894,NQO1,NAD(P)H dehydrogenase
+NP_001138483,,putative uncharacterized protein C16orf96
+NP_005323,HBZ,hemoglobin subunit zeta
+XP_003960891,,PREDICTED: mucin-16-like
+NP_060247,MKS1,Meckel syndrome type 1 protein isoform 1
+NP_003055,SLPI,antileukoproteinase precursor
+NP_002882,RASGRF1,ras-specific guanine nucleotide-releasing factor 1 isoform 1
+NP_001073930,UNCX,homeobox protein unc-4 homolog
+NP_001838,COL4A6,collagen alpha-6(IV) chain isoform A precursor
+NP_150229,ABCC12,multidrug resistance-associated protein 9
+NP_000921,PLAT,tissue-type plasminogen activator isoform 1 preproprotein
+XP_003960567,,"PREDICTED: LOW QUALITY PROTEIN: mucin-19, partial"
+NP_061909,HMGCLL1,"3-hydroxymethyl-3-methylglutaryl-CoA lyase, cytoplasmic isoform a"
+NP_003136,SSR2,translocon-associated protein subunit beta precursor
+NP_689585,MYOM3,myomesin-3
+NP_694573,ZNF75A,zinc finger protein 75A
+NP_620419,SDR16C5,epidermal retinol dehydrogenase 2
+XP_003960579,,PREDICTED: peptidyl-prolyl cis-trans isomerase A-like
+NP_001020775,ARRDC2,arrestin domain-containing protein 2 isoform 2
+NP_000423,MYL2,"myosin regulatory light chain 2, ventricular/cardiac muscle isoform"
+NP_005172,CA3,carbonic anhydrase 3
+NP_438169,N4BP2L1,NEDD4-binding protein 2-like 1 isoform 1
+NP_004354,CEACAM5,carcinoembryonic antigen-related cell adhesion molecule 5 preproprotein
+NP_066009,PPP4R4,serine/threonine-protein phosphatase 4 regulatory subunit 4 isoform 2
+NP_000414,KRT2,"keratin, type II cytoskeletal 2 epidermal"
+NP_005937,MT1A,metallothionein-1A
+NP_001252526,,zinc finger protein 211 isoform 3
+NP_000329,SLC12A1,solute carrier family 12 member 1 isoform A
+NP_001121695,,zinc finger protein 717
+NP_057395,ATPIF1,"ATPase inhibitor, mitochondrial isoform 1 precursor"
+NP_001729,CA1,carbonic anhydrase 1
+NP_067650,TMEM35,transmembrane protein 35
+NP_001177768,,matrix Gla protein isoform 1 precursor
+NP_079490,CCDC68,coiled-coil domain-containing protein 68
+NP_065723,S100A14,protein S100-A14
+NP_000590,IGFBP5,insulin-like growth factor-binding protein 5 precursor
+NP_001165908,,retrotransposon-derived protein PEG10 isoform 3
+NP_002768,PRTN3,myeloblastin precursor
+NP_001171890,,retrotransposon-derived protein PEG10 isoform 5
+NP_001076804,ZFP112,zinc finger protein 112 isoform 1
+XP_003960982,,PREDICTED: coiled-coil domain-containing protein 146 isoform 1
+NP_001191008,,ankyrin repeat and sterile alpha motif domain-containing protein 1B isoform j
+NP_002271,KRT35,"keratin, type I cuticular Ha5"
+NP_055676,ATP2C2,calcium-transporting ATPase type 2C member 2
+NP_003725,AOC3,membrane primary amine oxidase isoform 1
+NP_001264262,,ankyrin repeat domain-containing protein 62
+NP_001731,CALB2,calretinin isoform 1
+NP_005942,MT1H,metallothionein-1H
+NP_056297,SLC22A23,solute carrier family 22 member 23 isoform a
+NP_612412,MYL10,myosin regulatory light chain 10
+NP_006820,C10ORF116,adipogenesis regulatory factor
+NP_056045,ARAP2,"arf-GAP with Rho-GAP domain, ANK repeat and PH domain-containing protein 2"
+NP_000058,CA2,carbonic anhydrase 2
+NP_665741,OSBPL7,oxysterol-binding protein-related protein 7
+NP_056330,KRT23,"keratin, type I cytoskeletal 23"
+NP_065708,ZNF304,zinc finger protein 304
+NP_597717,ZNF418,zinc finger protein 418
+NP_612402,REEP6,receptor expression-enhancing protein 6
+NP_003078,SNCG,gamma-synuclein
+NP_003648,BCAS1,breast carcinoma-amplified sequence 1
+NP_001171891,,retrotransposon-derived protein PEG10 isoform 6
+NP_002468,MYL5,myosin light chain 5
+NP_061889,KRT24,"keratin, type I cytoskeletal 24"
+NP_004256,FADS2,fatty acid desaturase 2
+NP_060251,CYP2W1,cytochrome P450 2W1 precursor
+NP_001092878,EIF4E1B,eukaryotic translation initiation factor 4E type 1B
+NP_000510,HBD,hemoglobin subunit delta
+NP_005764,ZNF256,zinc finger protein 256
+NP_057419,,"proline dehydrogenase 1, mitochondrial isoform 1 precursor"
+NP_001033729,,Golgin subfamily A member 6A
+NP_115568,PPP1R1B,protein phosphatase 1 regulatory subunit 1B isoform 1
+NP_919431,,PH domain leucine-rich repeat-containing protein phosphatase 1
+NP_077289,NOL12,nucleolar protein 12
+NP_443188,ACSM1,"acyl-coenzyme A synthetase ACSM1, mitochondrial"
+NP_055514,ZNF646,zinc finger protein 646
+NP_699167,PSTK,L-seryl-tRNA(Sec) kinase
+NP_002575,PAX7,paired box protein Pax-7 isoform 1
+NP_778253,KRT77,"keratin, type II cytoskeletal 1b"
+NP_665910,HMGA1,high mobility group protein HMG-I/HMG-Y isoform b
+NP_005348,LIPE,hormone-sensitive lipase
+NP_079197,POF1B,protein POF1B
+NP_001258862,,centrosomal protein of 164 kDa isoform 2
+NP_009038,SSR3,translocon-associated protein subunit gamma
+NP_001245177,,transcription factor Sp6
+NP_001120838,PAX3,paired box protein Pax-3 isoform PAX3i
+NP_078828,LASS4,ceramide synthase 4
+NP_002448,MUC2,mucin-2 precursor
+NP_001177836,,3-oxo-5-beta-steroid 4-dehydrogenase isoform 3
+NP_005603,,RE1-silencing transcription factor
+NP_113663,ESPN,espin
+NP_008929,SCGN,secretagogin
+NP_001010868,C6ORF163,uncharacterized protein C6orf163
+NP_997186,ATRNL1,attractin-like protein 1 isoform 1 precursor
+NP_002719,PRG2,bone marrow proteoglycan isoform 1 preproprotein
+NP_003098,SOX4,transcription factor SOX-4
+NP_852124,PAX3,paired box protein Pax-3 isoform PAX3e
+NP_079022,HHIPL2,HHIP-like protein 2 precursor
+NP_000549,,hemoglobin subunit alpha
+NP_000509,HBB,hemoglobin subunit beta
+NP_005130,ANXA3,annexin A3
+NP_071745,ERAP2,endoplasmic reticulum aminopeptidase 2
+NP_001638,APOD,apolipoprotein D precursor
+NP_000291,PLA2G2A,"phospholipase A2, membrane associated precursor"
+NP_000086,COMP,cartilage oligomeric matrix protein precursor
+NP_277047,TSPYL5,testis-specific Y-encoded-like protein 5
+NP_008886,ZNF33B,zinc finger protein 33B
+NP_002268,KRT31,"keratin, type I cuticular Ha1"
+NP_005538,IVL,involucrin
+NP_001691,AZU1,azurocidin preproprotein
+NP_003713,TP63,tumor protein 63 isoform 1
+NP_000840,GSTM3,glutathione S-transferase Mu 3
+NP_478144,PPP4R4,serine/threonine-protein phosphatase 4 regulatory subunit 4 isoform 1
+XP_003960896,,"PREDICTED: mucin-5AC, partial"
+NP_001857,COX7B,"cytochrome c oxidase subunit 7B, mitochondrial precursor"
+NP_001265104,,zinc finger protein 33A isoform f
+NP_001036249,CCDC158,coiled-coil domain-containing protein 158
+NP_001071062,C14ORF73,exocyst complex component 3-like protein 4
+NP_036199,AKR7A3,aflatoxin B1 aldehyde reductase member 3
+NP_005082,PGLYRP1,peptidoglycan recognition protein 1 precursor
+NP_001265576,,zinc finger and BTB domain-containing protein 48
+NP_003359,USP1,ubiquitin carboxyl-terminal hydrolase 1
+NP_000988,RPL37,60S ribosomal protein L37
+NP_001030177,C18ORF32,UPF0729 protein C18orf32
+NP_001170977,,acyloxyacyl hydrolase isoform 2 preproprotein
+NP_001138450,MTHFD2L,probable bifunctional methylenetetrahydrofolate dehydrogenase/cyclohydrolase 2
+NP_001265102,,zinc finger protein 33A isoform e
+NP_001153174,FHL1,four and a half LIM domains protein 1 isoform 1
+NP_001092690,ZNF862,zinc finger protein 862
+NP_000415,KRT5,"keratin, type II cytoskeletal 5"
+NP_001814,CKB,creatine kinase B-type
+NP_001156863,,zinc finger and SCAN domain-containing protein 12
+NP_612424,PHF21B,PHD finger protein 21B isoform 1
+NP_060647,N4BP2,NEDD4-binding protein 2
+NP_001132,ALOX15B,arachidonate 15-lipoxygenase B isoform d
+NP_001265099,,zinc finger protein 33A isoform c
+NP_036519,PADI4,protein-arginine deiminase type-4
+NP_065737,ABAT,"4-aminobutyrate aminotransferase, mitochondrial precursor"
+NP_000413,,"keratin, type I cytoskeletal 17"
+NP_005316,HIST1H1A,histone H1.1
+NP_079495,DNAJC5,dnaJ homolog subfamily C member 5
+NP_001302,CRIP1,cysteine-rich protein 1
+NP_008889,ZNF16,zinc finger protein 16
+NP_001171925,,RING finger protein 32
+NP_996846,RARRES1,retinoic acid receptor responder protein 1 isoform 1 precursor
+NP_000822,GRIK3,"glutamate receptor ionotropic, kainate 3 precursor"
+NP_056244,ABI3BP,target of Nesh-SH3 precursor
+NP_690001,ANKS1B,ankyrin repeat and sterile alpha motif domain-containing protein 1B isoform a
+NP_828847,CYP4X1,cytochrome P450 4X1
+NP_149974,C20ORF114,BPI fold-containing family B member 1 precursor
+NP_000161,GLDC,glycine dehydrogenase
+NP_653229,TBC1D20,TBC1 domain family member 20
+NP_005226,ERBB4,receptor tyrosine-protein kinase erbB-4 isoform JM-a/CVT-1 precursor
+NP_004439,ERBB2,receptor tyrosine-protein kinase erbB-2 isoform a precursor
+NP_689823,C1ORF65,uncharacterized protein C1orf65
+NP_055072,CLEC4M,C-type lectin domain family 4 member M isoform 1
+NP_037399,GLS2,"glutaminase liver isoform, mitochondrial"
+NP_008922,ZNF197,zinc finger protein 197 isoform 1
+NP_001351,DHCR7,7-dehydrocholesterol reductase
+XP_003119575,,PREDICTED: prothymosin alpha-like
+NP_003467,CSRP3,cysteine and glycine-rich protein 3
+NP_001861,CPA3,mast cell carboxypeptidase A precursor
+NP_036469,CCDC19,"coiled-coil domain-containing protein 19, mitochondrial precursor"
+NP_002415,MMP8,neutrophil collagenase preproprotein
+NP_002414,MMP7,matrilysin preproprotein
+NP_060021,GRID1,"glutamate receptor ionotropic, delta-1 precursor"
+NP_775886,VWA3A,von Willebrand factor A domain-containing protein 3A precursor
+NP_003226,TG,thyroglobulin precursor
+NP_003298,TRPM2,transient receptor potential cation channel subfamily M member 2
+NP_001035972,,galectin-7
+NP_653218,HSPB6,heat shock protein beta-6
+NP_115927,TTBK1,tau-tubulin kinase 1
+NP_542785,KRT72,"keratin, type II cytoskeletal 72 isoform 1"
+NP_001136156,ZMYM5,zinc finger MYM-type protein 5 isoform 3
+NP_542390,C11ORF52,uncharacterized protein C11orf52
+NP_001107605,SYNPO2L,synaptopodin 2-like protein isoform a
+NP_001176,,zinc-alpha-2-glycoprotein precursor
+NP_003629,ITGA8,integrin alpha-8 precursor
+NP_001153171,FHL1,four and a half LIM domains protein 1 isoform 5
+NP_001153173,FHL1,four and a half LIM domains protein 1 isoform 3 precursor
+NP_001177915,,cysteine-rich secretory protein 3 isoform 2 precursor
+NP_001153175,FHL1,four and a half LIM domains protein 1 isoform 4
+NP_008887,,zinc finger protein 12 isoform b
+NP_056087,RPGRIP1L,protein fantom isoform a
+NP_003218,TFR2,transferrin receptor protein 2 isoform 1
+NP_004022,IRF7,interferon regulatory factor 7 isoform d
+NP_060573,LRRC8D,leucine-rich repeat-containing protein 8D
+NP_001074919,LILRB3,leukocyte immunoglobulin-like receptor subfamily B member 3 isoform 1 precursor
+NP_705838,CMYA5,cardiomyopathy-associated protein 5
+NP_005098,EXOG,"nuclease EXOG, mitochondrial isoform 1 precursor"
+NP_056052,KIAA1107,uncharacterized protein KIAA1107
+NP_849158,PLD6,mitochondrial cardiolipin hydrolase
+NP_009044,TCHH,trichohyalin
+NP_071414,CLSTN2,calsyntenin-2 precursor
+NP_005314,HIST1H1T,histone H1t
+NP_001121369,RPGRIP1L,protein fantom isoform b
+NP_001007249,ZNF599,zinc finger protein 599
+NP_000333,SLC4A1,band 3 anion transport protein
+NP_003801,TNFSF10,tumor necrosis factor ligand superfamily member 10 isoform 1
+NP_075378,HAPLN4,hyaluronan and proteoglycan link protein 4 precursor
+NP_001171506,,centrosomal protein of 85 kDa-like isoform c
+XP_003118572,,PREDICTED: uncharacterized protein C4orf50
+NP_006344,HMGN4,high mobility group nucleosome-binding domain-containing protein 4
+NP_003237,THBS1,thrombospondin-1 precursor
+XP_003960003,,PREDICTED: LOW QUALITY PROTEIN: zinc finger protein 100
+NP_004516,LRP2,low-density lipoprotein receptor-related protein 2 precursor
+NP_001265536,,filensin isoform 4
+NP_001207423,,glycine N-acyltransferase-like protein 1 isoform 2
+NP_057017,CCDC72,translation machinery-associated protein 7
+NP_003077,SNAPC4,snRNA-activating protein complex subunit 4
+NP_001257513,,IQ and AAA domain-containing protein 1 isoform 2
+XP_003960107,,PREDICTED: neuroblastoma breakpoint family member 20-like isoform 1
+NP_001835,COL2A1,collagen alpha-1(II) chain isoform 1 precursor
+NP_001034792,,neuroblastoma breakpoint family member 10
+NP_002815,PTMS,parathymosin
+NP_008872,SOX10,transcription factor SOX-10
+NP_067007,C6ORF47,uncharacterized protein C6orf47
+NP_003285,,tryptase alpha/beta-1 precursor
+NP_001191385,,RB-associated KRAB zinc finger protein
+NP_665906,HMGA1,high mobility group protein HMG-I/HMG-Y isoform a
+NP_001035173,ANXA8,annexin A8 isoform 2
+NP_002763,PRSS7,enteropeptidase precursor
+NP_689562,KRT222,keratin-like protein KRT222
+NP_005508,HMGN2,non-histone chromosomal protein HMG-17
+NP_078849,C6ORF211,UPF0364 protein C6orf211
+NP_001116224,SERPINI1,neuroserpin precursor
+NP_001092315,,annexin A8-like protein 1 isoform 1
+NP_077078,,tryptase beta-2 precursor
+NP_115881,JAGN1,protein jagunal homolog 1
+NP_001181927,,centrosomal protein of 152 kDa isoform 1
+NP_001264156,,leucine-rich repeat-containing G-protein coupled receptor 5 isoform 3 precursor
+NP_003217,TFF3,trefoil factor 3 precursor
+NP_071376,TNN,tenascin-N precursor
+NP_001017989,OPA3,optic atrophy 3 protein isoform a
+NP_001201835,,zinc finger protein 48 isoform 1
+NP_003809,CDS2,phosphatidate cytidylyltransferase 2
+NP_064693,ABCC9,ATP-binding cassette sub-family C member 9 isoform SUR2B
+NP_001116146,ABCD3,ATP-binding cassette sub-family D member 3 isoform b
+NP_036321,CABYR,calcium-binding tyrosine phosphorylation-regulated protein isoform a
+NP_001188291,,high mobility group nucleosome-binding domain-containing protein 3 isoform HMGN3c
+XP_003960812,,PREDICTED: LOW QUALITY PROTEIN: zinc finger protein 100
+XP_001126659,PTMA,PREDICTED: prothymosin alpha-like
+NP_056101,SYNM,synemin isoform B
+NP_002843,PTX3,pentraxin-related protein PTX3 precursor
+NP_003232,TGM4,protein-glutamine gamma-glutamyltransferase 4
+NP_065868,KIAA1407,coiled-coil domain-containing protein KIAA1407
+NP_001136155,CCDC121,coiled-coil domain-containing protein 121 isoform 2
+NP_001290,CNN1,calponin-1
+NP_002845,PVALB,parvalbumin alpha
+NP_001185903,,TMEM110-MUSTN1 fusion protein

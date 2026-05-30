@@ -1,5 +1,30 @@
 \section*{附录}
-
 \label{sec:appendix}
+\addcontentsline{toc}{section}{附录}
 
-% TODO: supplementary material
+\subsection*{代码与结果复现说明}
+
+本项目的原始数据位于 \texttt{questions/} 与 \texttt{code/} 目录下，报告源码位于 \texttt{article/} 目录下。主要脚本与输出文件如下：
+\begin{itemize}
+    \item \texttt{code/preprocessing/1\_data\_processing.py}：完成样本编号规整、重复列删除、临床信息匹配、PAM50 蛋白特征筛选、缺失值填充以及训练/测试集划分。
+    \item \texttt{code/preprocessing/2\_data\_exploration.py}：生成数据探索与预处理相关图像。
+    \item \texttt{code/clustering/dec\_clustering.py}：完成 K-means 基线、DEC 聚类、聚类指标统计以及聚类可视化。
+    \item \texttt{code/classification/3\_random\_forest.py}：完成随机森林分类实验。
+    \item \texttt{code/classification/3\_deep\_forest.py}：完成深度森林分类实验。
+    \item \texttt{code/classification/3\_naive\_bayes.py}：完成高斯朴素贝叶斯分类实验。
+    \item \texttt{code/classification/3\_tan\_baseline.py}：完成 TAN 基线模型实验。
+    \item \texttt{code/classification/3\_nb\_tan\_fusion.py}：完成 NB--TAN 融合模型实验。
+    \item \texttt{code/classification/3\_model\_comparison.py}：根据分类实验结果生成模型准确率和拟合差距对比图。
+    \item \texttt{code/own\_problem/node\_prediction.py}：完成淋巴结状态预测的自选问题建模、交叉验证、训练曲线和特征重要性分析。
+    \item \texttt{article/figures/}：保存报告中使用的可视化结果。
+\end{itemize}
+
+上述 Python 脚本均可从项目根目录运行。论文 PDF 可在 \texttt{article/} 目录下通过 \texttt{make} 命令编译生成。由于 LaTeX 交叉引用和目录信息需要多次编译，若图表编号或引用显示异常，可再次执行 \texttt{make}。
+
+\subsection*{成员分工}
+
+冯杰楠主要负责 LaTeX 排版、报告结构整理、聚类分析和自选问题建模。彭羽晗主要负责数据预处理流程、数据探索可视化和分类模型实验。两位成员共同完成图表整理、实验结果核对、报告润色、结论整理和最终 PDF 检查。
+
+\subsection*{局限性说明}
+
+本项目样本量仅为 77 例，而蛋白质特征维度较高，部分蛋白缺失率也较大。因此，所有分类和特征重要性结果都应解释为课程项目中的探索性发现，而不是可直接用于临床诊断的确定性结论。若要进一步验证模型可靠性，需要引入外部队列或更多独立样本进行重复实验。

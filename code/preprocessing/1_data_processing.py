@@ -1,13 +1,16 @@
 import pandas as pd
 import re
 import numpy as np
+from pathlib import Path
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split  # 必须加这个
 
 # ===================== 路径 =====================
-dataset_path = "77_cancer_proteomes_CPTAC_itraq.csv"
-clinical_info = "clinical_data_breast_cancer.csv"
-pam50_proteins = "PAM50_proteins.csv"
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+dataset_path = CODE_DIR / "77_cancer_proteomes_CPTAC_itraq.csv"
+clinical_info = CODE_DIR / "clinical_data_breast_cancer.csv"
+pam50_proteins = CODE_DIR / "PAM50_proteins.csv"
 
 # ===================== 读取数据 =====================
 data = pd.read_csv(dataset_path, header=0, index_col=0)
@@ -72,8 +75,8 @@ print(f"训练集：{len(train_set)} 个")
 print(f"测试集：{len(test_set)} 个")
 
 # ===================== 保存文件 =====================
-train_set.to_csv("train_set.csv", encoding="utf-8-sig")
-test_set.to_csv("test_set.csv", encoding="utf-8-sig")
+train_set.to_csv(CODE_DIR / "train_set.csv", encoding="utf-8-sig")
+test_set.to_csv(CODE_DIR / "test_set.csv", encoding="utf-8-sig")
 print("\n文件已保存：")
-print("→ train_set.csv")
-print("→ test_set.csv")
+print(f"→ {CODE_DIR / 'train_set.csv'}")
+print(f"→ {CODE_DIR / 'test_set.csv'}")

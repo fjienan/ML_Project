@@ -3,6 +3,14 @@
 底层逻辑完整实现：多层级联森林 + 概率特征增强
 不装任何库！只用你已有的 RandomForest！
 """
+import os
+from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/ml_project_matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,9 +18,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import GridSearchCV
 
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+FIGURE_DIR = ROOT / "article" / "figures" / "classification"
+FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+
 # ===================== 1. 读取数据 =====================
-train_set = pd.read_csv("train_set.csv", index_col=0)
-test_set = pd.read_csv("test_set.csv", index_col=0)
+train_set = pd.read_csv(CODE_DIR / "train_set.csv", index_col=0)
+test_set = pd.read_csv(CODE_DIR / "test_set.csv", index_col=0)
 
 X_train = train_set.drop(columns=['PAM50 mRNA'])
 y_train = train_set['PAM50 mRNA']
@@ -94,4 +107,5 @@ plt.figure(figsize=(10,5))
 plt.barh(imp['Protein'][:10][::-1], imp['Importance'][:10][::-1])
 plt.title('Top10 Important Proteins (Deep Forest Native)')
 plt.tight_layout()
-plt.show()
+plt.savefig(FIGURE_DIR / "deep_forest_top10_features.png", dpi=300, bbox_inches='tight')
+plt.close()

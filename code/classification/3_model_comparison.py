@@ -1,21 +1,29 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import os
+from pathlib import Path
 
-# 数据（和你论文完全一致）
-models = ['Deep Forest', 'Random Forest', 'TAN', 'Gaussian NB']
-test_acc = [0.794, 0.765, 0.676, 0.824]
-fit_gap = [0.206, 0.235, 0.324, 0.106]
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/ml_project_matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+# 数据（和论文表格保持一致）
+models = ['Deep Forest', 'Random Forest', 'Gaussian NB', 'Fusion']
+test_acc = [0.794, 0.765, 0.824, 0.882]
+fit_gap = [0.206, 0.235, 0.106, 0.048]
 
 # 保存路径
-save_dir = "figures/classification"
+base_dir = Path(__file__).resolve().parents[2]
+save_dir = base_dir / "article" / "figures" / "classification"
 os.makedirs(save_dir, exist_ok=True)
 
 # ===================== 图1：Test Accuracy =====================
 plt.figure(figsize=(8, 5))
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 bars = plt.bar(models, test_acc, color=colors)
-plt.ylim(0.6, 0.9)
+plt.ylim(0.6, 0.93)
 plt.title('Model Test Accuracy Comparison', fontsize=14)
 plt.ylabel('Test Accuracy', fontsize=12)
 
@@ -25,7 +33,7 @@ for bar in bars:
              f'{height:.3f}', ha='center', fontsize=11)
 
 plt.tight_layout()
-plt.savefig(f"{save_dir}/model_test_acc.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "model_test_acc.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 # ===================== 图2：Fit Gap =====================
@@ -41,7 +49,7 @@ for bar in bars:
              f'{height:.3f}', ha='center', fontsize=11)
 
 plt.tight_layout()
-plt.savefig(f"{save_dir}/model_fit_gap.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "model_fit_gap.png", dpi=300, bbox_inches='tight')
 plt.close()
 
-print("✅ All figures saved to figures/classification/")
+print(f"✅ All figures saved to {save_dir}")

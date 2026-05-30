@@ -1,5 +1,13 @@
 import pandas as pd
 import numpy as np
+import os
+from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/ml_project_matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import (
@@ -15,10 +23,16 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 from scipy.stats import pearsonr
 from itertools import cycle
 
-# ===================== 读取数据 =====================
-train = pd.read_csv("train_set.csv", index_col=0)
-test = pd.read_csv("test_set.csv", index_col=0)
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+FIGURE_DIR = ROOT / "article" / "figures" / "classification"
+FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 
+# ===================== 读取数据 =====================
+train = pd.read_csv(CODE_DIR / "train_set.csv", index_col=0)
+test = pd.read_csv(CODE_DIR / "test_set.csv", index_col=0)
+
+feature_names = train.drop("PAM50 mRNA", axis=1).columns
 X_train = train.drop("PAM50 mRNA", axis=1).values
 y_train = train["PAM50 mRNA"].values
 X_test = test.drop("PAM50 mRNA", axis=1).values
@@ -107,6 +121,7 @@ def predict_ensemble_log_prob(X, alpha):
 # ===================== 计算各模型指标（含AUC） =====================
 alphas = [1.0, 0.524, 0.0]
 model_names = ["纯NB", "融合α=0.524", "纯TAN"]
+plot_names = ["Gaussian NB", "Fusion alpha=0.524", "TAN"]
 results = []
 
 for a, name in zip(alphas, model_names):
@@ -137,14 +152,14 @@ for res in results:
     print(f"{res['模型']:10} | Acc: {res['准确率']:.4f} | Kappa: {res['Kappa']:.4f} | Macro-AUC: {res['Macro-AUC']:.4f} | Micro-AUC: {res['Micro-AUC']:.4f}")
 
 # ===================== 绘制ROC曲线（3模型同图对比） =====================
-plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 fig, ax = plt.subplots(figsize=(10, 8))
 colors = ['#ff7f0e', '#2ca02c', '#1f77b4']
 linestyles = ['--', '-', ':']
 
-for idx, (a, name) in enumerate(zip(alphas, model_names)):
+for idx, (a, name) in enumerate(zip(alphas, plot_names)):
     prob = np.exp(predict_ensemble_log_prob(X_test, a))
     # 微平均ROC
     fpr_micro, tpr_micro, _ = roc_curve(y_test_bin.ravel(), prob.ravel())
@@ -153,14 +168,14 @@ for idx, (a, name) in enumerate(zip(alphas, model_names)):
              lw=2, label=f'{name} (Micro-AUC={auc_micro:.4f})')
 
 # 随机线
-ax.plot([0, 1], [0, 1], 'k--', lw=1.5, label='随机猜测')
+ax.plot([0, 1], [0, 1], 'k--', lw=1.5, label='Random baseline')
 ax.set_xlabel('False Positive Rate (FPR)')
 ax.set_ylabel('True Positive Rate (TPR)')
-ax.set_title('纯NB vs 融合模型 vs 纯TAN — ROC曲线对比')
+ax.set_title('Gaussian NB vs Fusion vs TAN ROC Comparison')
 ax.legend(loc='lower right')
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig('roc_comparison.png', dpi=300, bbox_inches='tight')
+plt.savefig(FIGURE_DIR / 'roc_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 # ===================== 绘制各模型AUC柱状图 =====================
@@ -174,10 +189,10 @@ micro_aucs = [res['Micro-AUC'] for res in results]
 plt.bar(x - width/2, macro_aucs, width, label='Macro-AUC', color='#1f77b4')
 plt.bar(x + width/2, micro_aucs, width, label='Micro-AUC', color='#ff7f0e')
 
-plt.xlabel('模型')
+plt.xlabel('Model')
 plt.ylabel('AUC')
-plt.title('各模型 Macro-AUC 与 Micro-AUC 对比')
-plt.xticks(x, model_names)
+plt.title('Macro-AUC and Micro-AUC Comparison')
+plt.xticks(x, plot_names)
 plt.ylim(0.8, 0.95)
 plt.legend()
 # 加数值标签
@@ -186,7 +201,22 @@ for i, v in enumerate(macro_aucs):
 for i, v in enumerate(micro_aucs):
     plt.text(i + width/2, v + 0.005, f'{v:.4f}', ha='center')
 plt.tight_layout()
-plt.savefig('auc_comparison.png', dpi=300, bbox_inches='tight')
+plt.savefig(FIGURE_DIR / 'auc_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-print("\n✅ 已生成：roc_comparison.png（ROC曲线）、auc_comparison.png（AUC对比）")
+# ===================== 融合模型 Top10 特征重要性 =====================
+nb_score = np.std(nb.theta_, axis=0) / (np.mean(nb.var_, axis=0) + 1e-8)
+tan_score = np.std(tan.theta, axis=0) / (np.mean(tan.var, axis=0) + 1e-8)
+fusion_score = 0.524 * nb_score + (1 - 0.524) * tan_score
+top10 = pd.Series(fusion_score, index=feature_names).sort_values(ascending=False).head(10)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+top10.iloc[::-1].plot(kind='barh', color='#9467bd', ax=ax)
+ax.set_xlabel('Fusion Discrimination Score')
+ax.set_title('Top 10 Important Protein Features (NB + TAN Fusion)')
+ax.grid(axis='x', alpha=0.25)
+fig.tight_layout()
+fig.savefig(FIGURE_DIR / 'nb_tan_top10_features.png', dpi=300, bbox_inches='tight')
+plt.close(fig)
+
+print(f"\n✅ 已生成 ROC、AUC 和融合 Top10 特征图到：{FIGURE_DIR}")

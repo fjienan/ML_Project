@@ -1,20 +1,33 @@
 # ===================== 乳腺癌数据 分开可视化（每张图独立） =====================
+import os
 import pandas as pd
 import re
 import numpy as np
+from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/ml_project_matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+FIGURE_DIR = ROOT / "article" / "figures" / "data_preprocessing"
+FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 
 # 解决中文显示
 plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 # ===================== 读取数据 =====================
-dataset_path = "77_cancer_proteomes_CPTAC_itraq.csv"
-clinical_info = "clinical_data_breast_cancer.csv"
-pam50_proteins = "PAM50_proteins.csv"
+dataset_path = CODE_DIR / "77_cancer_proteomes_CPTAC_itraq.csv"
+clinical_info = CODE_DIR / "clinical_data_breast_cancer.csv"
+pam50_proteins = CODE_DIR / "PAM50_proteins.csv"
 
 data_raw = pd.read_csv(dataset_path, header=0, index_col=0)
 clinical = pd.read_csv(clinical_info, header=0, index_col=0)
@@ -29,8 +42,8 @@ plt.figure(figsize=(10, 6))
 sns.heatmap(data_raw.isnull(), cbar=False, cmap="Reds", yticklabels=False)
 plt.title("Missing Value Distribution of Raw Data", fontsize=14)
 plt.tight_layout()
-plt.savefig("1_missing_value.png", dpi=300)
-plt.show()
+plt.savefig(FIGURE_DIR / "1_missing_value.png", dpi=300)
+plt.close()
 
 # 2. 原始蛋白质表达值分布
 expr_raw = data_raw.drop(columns=["gene_symbol", "gene_name"], errors="ignore")
@@ -43,8 +56,8 @@ plt.title("Distribution of Raw Protein Expression Values", fontsize=14)
 plt.xlabel("Expression Value")
 plt.ylabel("Frequency")
 plt.tight_layout()
-plt.savefig("2_distribution_raw_pro_value.png", dpi=300)
-plt.show()
+plt.savefig(FIGURE_DIR / "2_distribution_raw_pro_value.png", dpi=300)
+plt.close()
 
 # 3. 原始临床 PAM50 亚型分布
 plt.figure(figsize=(10, 6))
@@ -52,8 +65,8 @@ clinical["PAM50 mRNA"].value_counts().plot(kind="bar", color="orange", alpha=0.7
 plt.title("Distribution of Raw Clinical PAM50 Subtypes", fontsize=14)
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("3_distribution_raw_pam50.png", dpi=300)
-plt.show()
+plt.savefig(FIGURE_DIR / "3_distribution_raw_pam50.png", dpi=300)
+plt.close()
 #PAM50 是乳腺癌分子分型（LumA、LumB、Basal、HER2 等）
 #这张图展示各类别样本数量是否均衡
 #能看出数据集中哪一类患者最多，为后续分类模型提供依据
@@ -98,8 +111,8 @@ plt.title("Distribution of Processed Protein Expression Values", fontsize=14)
 plt.xlabel("Expression Value")
 plt.ylabel("Frequency")
 plt.tight_layout()
-plt.savefig("4_distribution_processed_pro_value.png", dpi=300)
-plt.show()
+plt.savefig(FIGURE_DIR / "4_distribution_processed_pro_value.png", dpi=300)
+plt.close()
 
 # 3. 训练集 / 测试集 PAM50 分层分布对比
 plt.figure(figsize=(10, 6))
@@ -114,12 +127,12 @@ plt.title('Distribution of PAM50 Subtypes in Training vs Testing Sets', fontsize
 plt.xticks(x, train_pam.index, rotation=45)
 plt.legend()
 plt.tight_layout()
-plt.savefig("5_training_testing_pam50_comparison.png", dpi=300)
-plt.show()
+plt.savefig(FIGURE_DIR / "5_training_testing_pam50_comparison.png", dpi=300)
+plt.close()
 
 # ===================== 保存文件 =====================
-train_set.to_csv("train_set.csv", encoding="utf-8-sig")
-test_set.to_csv("test_set.csv", encoding="utf-8-sig")
+train_set.to_csv(CODE_DIR / "train_set.csv", encoding="utf-8-sig")
+test_set.to_csv(CODE_DIR / "test_set.csv", encoding="utf-8-sig")
 
-print("\n✅ 所有图片已单独保存！")
-print("✅ 训练集/测试集已生成！")
+print(f"\n✅ 所有图片已保存到：{FIGURE_DIR}")
+print(f"✅ 训练集/测试集已生成到：{CODE_DIR}")

@@ -1,8 +1,5 @@
 \section{数据探索}
-
 \label{sec:data_exploration}
-
-% TODO: statistics and visualization
 
 \subsection{各维度可视化结果}
 本研究的可视化分析基于原始表达值与缺失值填充后的数据，以呈现真实分布；
@@ -10,16 +7,19 @@
 \subsubsection{原始数据缺失值分布}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{1_原始缺失值.png}
+    \includegraphics[width=0.85\textwidth]{./figures/data_preprocessing/1_missing_value.png}
     \caption{原始蛋白质数据缺失值分布热图}
     \label{fig:missing_value}
 \end{figure}
-缺失值呈随机散布状态，不存在固定缺失规律，适配中位数填充处理方案。
+在 77 个匹配癌症样本和 43 个可匹配 PAM50 蛋白特征中，共有 323 个缺失表达值，占全部
+\(77\times 43=3311\) 个表达值的 9.76\%。整体上缺失值分布较分散，但不同蛋白之间缺失率并不完全一致；
+例如 \texttt{NP\_002458} 与 \texttt{NP\_569082} 的缺失率分别约为 71.4\% 和 68.8\%。
+因此，本研究采用中位数填充以保留样本量，同时在解释特征重要性时避免将高缺失蛋白过度解读为稳定生物标志物。
 
 \subsubsection{原始蛋白质表达值分布}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{2_原始表达值分布.png}
+    \includegraphics[width=0.85\textwidth]{./figures/data_preprocessing/2_distribution_raw_pro_value.png}
     \caption{原始蛋白质表达值直方图}
     \label{fig:raw_expr_dist}
 \end{figure}
@@ -27,17 +27,17 @@
 
 \subsubsection{原始PAM50亚型分布}
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\textwidth]{3_原始PAM50分布.png}
+    \centering  
+    \includegraphics[width=0.85\textwidth]{./figures/data_preprocessing/3_distribution_raw_pam50.png}
     \caption{临床数据PAM50分子分型分布}
     \label{fig:raw_pam50_dist}
 \end{figure}
-数据集存在轻微类别数量差异，其中LumA亚型样本占比最高。
+临床数据中的 PAM50 标签存在一定类别差异，其中 Luminal B 亚型样本数量最高；在最终匹配到蛋白质组数据的 77 个样本中，各类别数量分别为 Luminal B 24 例、Luminal A 23 例、Basal-like 18 例和 HER2-enriched 12 例。
 
 \subsubsection{处理后蛋白质表达值分布}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{4_处理后表达值分布.png}
+    \includegraphics[width=0.85\textwidth]{./figures/data_preprocessing/4_distribution_processed_pro_value.png}
     \caption{缺失值填充后表达值分布}
     \label{fig:proc_expr_dist}
 \end{figure}
@@ -46,7 +46,7 @@
 \subsubsection{训练集与测试集PAM50分布对比}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{5_训练测试集PAM50对比.png}
+    \includegraphics[width=0.85\textwidth]{./figures/data_preprocessing/5_training_testing_pam50_comparison.png}
     \caption{训练集与测试集PAM50亚型分布对比}
     \label{fig:train_test_pam}
 \end{figure}
@@ -60,11 +60,12 @@
         \toprule
         处理阶段 & 样本数 & 特征数 & 处理方式 \\
         \midrule
-        原始蛋白质数据 & 83列 & 12000+ & 存在缺失值 \\
-        去重后 & 77例 & 12000+ & 删除重复列 \\
-        PAM50特征筛选后 & 77例 & PAM50蛋白集 & 中位数填充 \\
-        训练集 & 43例 & PAM50蛋白集 & 无缺失 \\
-        测试集 & 34例 & PAM50蛋白集 & 无缺失 \\
+        原始表达矩阵 & 83列 & 12553 & 含重复列与健康样本列 \\
+        去重后表达矩阵 & 80列 & 12553 & 删除3个重复TCGA列 \\
+        癌症样本匹配后 & 77例 & 12553 & 去除3个健康样本列并匹配临床ID \\
+        PAM50特征筛选后 & 77例 & 43 & 与 \texttt{RefSeqProteinID} 匹配 \\
+        训练集 & 43例 & 43 & 分层抽样，中位数填充后无缺失 \\
+        测试集 & 34例 & 43 & 分层抽样，中位数填充后无缺失 \\
         \bottomrule
     \end{tabular}
 \end{table}

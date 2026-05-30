@@ -4,21 +4,30 @@
 
 import pandas as pd
 import numpy as np
+import os
+from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/ml_project_matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV
 from sklearn import tree
 
 # ===================== 自动创建保存路径 =====================
-save_dir = "figures/classification"
-os.makedirs(save_dir, exist_ok=True)
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+save_dir = ROOT / "article" / "figures" / "classification"
+save_dir.mkdir(parents=True, exist_ok=True)
 
 # ===================== 1. 读取数据 =====================
-train_set = pd.read_csv("train_set.csv", index_col=0)
-test_set = pd.read_csv("test_set.csv", index_col=0)
+train_set = pd.read_csv(CODE_DIR / "train_set.csv", index_col=0)
+test_set = pd.read_csv(CODE_DIR / "test_set.csv", index_col=0)
 
 # ===================== 2. 特征与标签 =====================
 X_train = train_set.drop(columns=['PAM50 mRNA'])
@@ -76,7 +85,7 @@ plt.barh(imp_df["Protein_ID"][:10][::-1], imp_df["Importance"][:10][::-1], color
 plt.xlabel("Importance Score")
 plt.title("Top 10 Important Proteins (Optimized Random Forest)")
 plt.tight_layout()
-plt.savefig(f"{save_dir}/rf_top10_proteins.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "rf_top10_proteins.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 # ==============================================
@@ -93,7 +102,7 @@ plt.ylabel('Accuracy')
 for i, v in enumerate(accs):
     plt.text(i, v + 0.02, f'{v:.3f}', ha='center')
 plt.tight_layout()
-plt.savefig(f"{save_dir}/rf_accuracy.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "rf_accuracy.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 # ==============================================
@@ -107,7 +116,7 @@ plt.title('Confusion Matrix (Random Forest)')
 plt.xlabel('Predicted Label')
 plt.ylabel('True Label')
 plt.tight_layout()
-plt.savefig(f"{save_dir}/rf_confusion_matrix.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "rf_confusion_matrix.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 # ==============================================
@@ -124,7 +133,7 @@ tree.plot_tree(
 )
 plt.title('Single Decision Tree from Optimized Random Forest')
 plt.tight_layout()
-plt.savefig(f"{save_dir}/rf_tree_structure.png", dpi=300, bbox_inches='tight')
+plt.savefig(save_dir / "rf_tree_structure.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 print(f"\n✅ 所有随机森林图片已保存到：{save_dir}")

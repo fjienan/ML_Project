@@ -4,12 +4,15 @@ TAN 树增强朴素贝叶斯（最高级版本）
 """
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import KBinsDiscretizer
 
 # 数据
-train = pd.read_csv("train_set.csv", index_col=0)
-test = pd.read_csv("test_set.csv", index_col=0)
+ROOT = Path(__file__).resolve().parents[2]
+CODE_DIR = ROOT / "code"
+train = pd.read_csv(CODE_DIR / "train_set.csv", index_col=0)
+test = pd.read_csv(CODE_DIR / "test_set.csv", index_col=0)
 
 X_train = train.drop("PAM50 mRNA", axis=1).values
 y_train = train["PAM50 mRNA"].values
